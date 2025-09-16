@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Tableau — Données Publiques</title>
+<title>Tableau — Données publiques</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#07090d; --ink:#eef3ff; --muted:#b8c5dd; --line:#1b2330;
-    --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.045); --stroke:rgba(255,255,255,.12);
-    --red:#ff2d55; --red2:#ff3b3b; --vio:#a78bfa; --ylw:#facc15; --grn:#22c55e; --blu:#60a5fa;
+    --bg:#070910; --ink:#eaf2ff; --muted:#b9c2da; --line:#1a2340;
+    --glass:rgba(255,255,255,.08); --glass2:rgba(255,255,255,.045); --stroke:rgba(255,255,255,.14);
+    --acc1:#ff6b81; --acc2:#ff4d6d; /* reflets rouges */
+    --gold:#ffd166; --ok:#22c55e; --blu:#60a5fa; --vio:#a78bfa;
     --radius:16px; --radius-lg:18px; --blur:blur(16px) saturate(160%); --shadow:0 22px 60px rgba(0,0,0,.55);
   }
   *{box-sizing:border-box}
@@ -18,132 +19,141 @@
   body{
     margin:0; font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     color:var(--ink);
-    /* Fond : rouge principal + points de lueur violets/verts très légers */
+    /* Fond : reflets rouges légers + un soupçon de violet/bleu pour la profondeur */
     background:
-      radial-gradient(900px 600px at 85% -10%, rgba(255,45,85,.18), transparent 60%),
-      radial-gradient(800px 500px at 10% 110%, rgba(167,139,250,.14), transparent 60%),
-      radial-gradient(6px 6px at 20% 30%, rgba(167,139,250,.20), transparent 60%),
-      radial-gradient(4px 4px at 72% 22%, rgba(34,197,94,.20), transparent 60%),
-      radial-gradient(5px 5px at 58% 78%, rgba(167,139,250,.16), transparent 60%),
-      radial-gradient(4px 4px at 12% 82%, rgba(34,197,94,.18), transparent 60%),
-      var(--bg);
+      radial-gradient(1100px 680px at 18% -12%, rgba(255,77,109,.20), transparent 60%),
+      radial-gradient(950px 600px at 88% 112%, rgba(255,107,129,.16), transparent 60%),
+      radial-gradient(700px 520px at 50% -18%, rgba(255,77,109,.12), transparent 60%),
+      radial-gradient(6px 6px at 22% 30%, rgba(255,107,129,.18), transparent 60%),
+      radial-gradient(4px 4px at 74% 24%, rgba(167,139,250,.14), transparent 60%),
+      #05070d;
     padding:18px 12px 60px;
     background-attachment: fixed;
   }
-  .wrap{width:min(980px,100%); margin:0 auto}
+  .wrap{width:min(980px,100%); margin:0 auto; position:relative}
+  /* léger reflet au-dessus du contenu */
+  .wrap::before{
+    content:""; position:absolute; inset:-120px -60px auto -60px; height:220px; pointer-events:none;
+    background:radial-gradient(600px 220px at 50% 0%, rgba(255,77,109,.18), transparent 70%);
+    filter:blur(6px);
+  }
 
   /* Header */
-  .head{display:flex; flex-direction:column; gap:8px; align-items:center; margin:6px 0 14px; position:relative}
-  .title{font-size:clamp(20px,5vw,30px); font-weight:900; text-align:center; letter-spacing:.2px; display:flex; gap:10px; align-items:center}
-  .subtitle{color:var(--muted); font-weight:700; text-align:center; font-size:14px; letter-spacing:.15px}
+  .head{display:flex; flex-direction:column; gap:6px; align-items:center; margin:6px 0 14px}
+  .title{font-size:clamp(20px,5vw,30px); font-weight:900; text-align:center; letter-spacing:.2px; display:flex; gap:10px; align-items:center; text-shadow:0 0 20px rgba(255,77,109,.16)}
+  .subtitle{color:#cfe1ff; font-weight:700; font-size:13px; letter-spacing:.15px; text-align:center; opacity:.95}
 
-  /* Badge validation */
+  /* Badge validation (icône seule) */
   .ok-badge{
     display:inline-flex; align-items:center; gap:8px;
-    padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
-    color:#0b1610; background:linear-gradient(180deg,#34d399,#22c55e);
+    padding:6px; border-radius:999px;
+    background:linear-gradient(180deg,#34d399,#22c55e);
     border:1px solid rgba(255,255,255,.22);
     box-shadow:0 10px 24px rgba(34,197,94,.25), 0 0 0 6px rgba(34,197,94,.10);
   }
-  .ok-badge svg{display:block}
 
-  /* Top pills */
+  /* Tiles */
   .tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:12px 0 16px}
   .tile{
     display:flex; flex-direction:column; align-items:center; gap:8px;
     border:1px solid var(--stroke); border-radius:14px; padding:12px 8px;
-    background:linear-gradient(180deg,var(--glass),var(--glass2)); backdrop-filter:var(--blur); box-shadow:var(--shadow);
+    background:
+      linear-gradient(180deg,var(--glass),var(--glass2)),
+      radial-gradient(400px 180px at 50% -40px, rgba(255,77,109,.10), transparent 70%);
+    backdrop-filter:var(--blur); box-shadow:var(--shadow), 0 10px 28px rgba(255,77,109,.08);
   }
   .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.18)}
-  .ico.blu{background:linear-gradient(180deg,#1e293b,#0b1320)}  .ico.vio{background:linear-gradient(180deg,#2a2040,#141022)}
-  .ico.ylw{background:linear-gradient(180deg,#3f2e06,#1a1402)}  .ico.grn{background:linear-gradient(180deg,#0e2a14,#07140b)}
+  .ico.blu{background:linear-gradient(180deg,#0f172a,#0b1220)}
+  .ico.vio{background:linear-gradient(180deg,#241a3a,#121020)}
+  .ico.ylw{background:linear-gradient(180deg,#3a2f0b,#151208)}
+  .ico.grn{background:linear-gradient(180deg,#0b1f16,#08130e)}
   .tile b{font-size:13px}
-  .tile span{font-size:12px; color:#c8d3ea}
+  .tile span{font-size:12px; color:#cfe1ff}
 
-  /* Unlock banner */
+  /* Unlock banner (jaune) avec reflet rouge léger */
   .unlock{
-    border:1px solid var(--stroke); border-radius:18px; padding:22px 14px;
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-    box-shadow:var(--shadow); position:relative; overflow:hidden; margin:8px 0 18px;
+    border:1px solid rgba(255,209,102,.35);
+    border-radius:18px; padding:22px 14px;
+    background:
+      linear-gradient(180deg, rgba(255,209,102,.14), rgba(255,209,102,.08)),
+      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.035));
+    box-shadow:0 22px 60px rgba(0,0,0,.55), 0 12px 36px rgba(255,209,102,.12), 0 10px 28px rgba(255,77,109,.10);
+    position:relative; overflow:hidden; margin:8px 0 18px; text-align:center;
   }
   .unlock::before{
-    content:""; position:absolute; inset:0;
-    background:radial-gradient(1200px 400px at 50% -40px, rgba(255,45,85,.25), transparent 60%);
-    pointer-events:none; opacity:.9;
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:.95;
+    background:
+      radial-gradient(1200px 420px at 50% -40px, rgba(255,209,102,.18), transparent 60%),
+      radial-gradient(1000px 380px at 50% -60px, rgba(255,77,109,.16), transparent 60%);
   }
-  .unlock h3{margin:0 0 6px; text-align:center; font-size:16px}
-  .unlock p{margin:0 0 12px; text-align:center; color:#d7e1f6; font-size:12.5px}
+  .unlock h3{margin:0 0 6px; font-size:16px}
+  .unlock p{margin:0 12px 12px; color:#e9f2ff; font-size:12.5px}
+
+  /* CTA jaune */
   .cta{
-    display:block; margin:0 auto; padding:10px 14px; font-weight:900; font-size:13.5px; letter-spacing:.2px;
-    color:#0b0f17; background:linear-gradient(90deg,var(--red),var(--red2)); border:1px solid rgba(255,255,255,.22);
-    border-radius:999px; cursor:pointer; box-shadow:0 16px 40px rgba(255,45,85,.28);
+    display:inline-flex; align-items:center; gap:10px;
+    padding:12px 18px; font-weight:900; font-size:15px; letter-spacing:.2px;
+    color:#161717; text-decoration:none;
+    background:linear-gradient(180deg,#ffd166 0%, #f4b934 100%);
+    border:1.5px solid #f1c14a; border-radius:999px; cursor:pointer;
+    box-shadow:0 12px 34px rgba(255,209,102,.30), inset 0 -2px 0 rgba(0,0,0,.08);
   }
+  .cta svg{display:block}
 
   /* Sections */
-  .section{border:1px solid var(--stroke); border-radius:18px; background:linear-gradient(180deg,var(--glass),var(--glass2)); backdrop-filter:var(--blur); box-shadow:var(--shadow); margin:18px 0; overflow:hidden}
+  .section{
+    border:1px solid var(--stroke); border-radius:18px;
+    background:
+      linear-gradient(180deg,var(--glass),var(--glass2)),
+      radial-gradient(500px 220px at 50% -60px, rgba(255,77,109,.10), transparent 70%);
+    backdrop-filter:var(--blur); box-shadow:var(--shadow), 0 10px 28px rgba(255,77,109,.08);
+    margin:18px 0; overflow:hidden
+  }
   .sec-head{display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid var(--stroke)}
   .sec-title{display:flex; align-items:center; gap:10px; font-weight:900}
+  .sec-ico{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06)}
   .count{font-size:12px; color:#cfe1ff; border:1px solid var(--stroke); border-radius:999px; padding:4px 8px; background:rgba(255,255,255,.06)}
+  .myst{filter:blur(6px); user-select:none; pointer-events:none}
   .list{display:flex; flex-direction:column}
-  .row{
-    display:flex; align-items:center; gap:12px; padding:12px; border-top:1px solid rgba(255,255,255,.06);
-    background:rgba(255,255,255,.02);
-  }
+  .row{display:flex; align-items:center; gap:12px; padding:12px; border-top:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02)}
   .row:first-child{border-top:none}
-  .av{width:28px;height:28px;border-radius:999px; background:linear-gradient(180deg,#1f2937,#0b1220); border:1px solid rgba(255,255,255,.25)}
+  .empty{padding:16px; text-align:center; color:#cfe1ff; font-weight:700; opacity:.9; border-top:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02)}
+  .av{width:28px;height:28px;border-radius:999px; background:linear-gradient(180deg,#101a2a,#0b1220); border:1px solid rgba(255,255,255,.25)}
   .dot{width:8px;height:8px;border-radius:50%}
-  .dot.vio{background:#a78bfa} .dot.ylw{background:#facc15}
+  .dot.vio{background:var(--vio)} .dot.ylw{background:var(--gold)}
   .txt{flex:1; min-width:0}
   .name{font-weight:800; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .sub{color:#bacee8; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .sub{color:#b6c5e5; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   .dl{margin-left:auto; display:grid; place-items:center; width:28px;height:28px;border-radius:8px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); cursor:pointer}
 
-  /* Modal */
-  .modal{position:fixed; inset:0; display:none; place-items:center; background:rgba(3,8,16,.6); backdrop-filter:blur(6px); z-index:10}
-  .modal.show{display:grid}
-  .sheet{width:min(520px,92vw); border:1px solid var(--stroke); border-radius:18px; padding:16px; background:linear-gradient(180deg,var(--glass),var(--glass2)); box-shadow:var(--shadow)}
-  .sheet h4{margin:0 0 8px}
-  .sheet p{margin:0 0 12px; color:#cfe1ff}
-  .row-in{display:flex; gap:8px; align-items:center}
-  .file{flex:1; height:42px; border-radius:12px; border:1px solid var(--stroke); background:#0b1220; color:#0b0f17; padding:0 12px}
-  .btn{height:42px; border-radius:12px; border:1px solid rgba(255,255,255,.2); background:linear-gradient(90deg,var(--red),var(--red2)); color:#0b0f17; font-weight:900; padding:0 12px; cursor:pointer}
-  .ghost{height:42px; border-radius:12px; border:1px solid var(--stroke); background:rgba(255,255,255,.06); color:#e4eeff; font-weight:800; padding:0 12px; cursor:pointer}
+  /* Localisation (en bas) */
+  .loc{border:1px solid var(--line); border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.035)); backdrop-filter:blur(16px) saturate(160%); box-shadow:var(--shadow), 0 10px 28px rgba(255,77,109,.08); padding:14px; width:100%; margin:18px 0}
+  .loc-head{display:flex;align-items:center;justify-content:space-between; padding:8px 6px 12px; border-bottom:1px solid rgba(255,255,255,.08)}
+  .loc-title{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}
+  .loc-chip{display:inline-flex; align-items:center; gap:10px; padding:6px 10px; border-radius:999px; font-weight:800; font-size:12px; color:#ffc6d0; border:1px solid rgba(255,107,129,.25); background:rgba(255,107,129,.10)}
+  .loc-chip a{color:#ffeef1; text-decoration:underline; cursor:pointer}
+
+  /* Image floutée ++ */
+  .loc-map{position:relative; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:rgba(255,255,255,.03); margin:14px 2px 6px}
+  .loc-map img{display:block; width:100%; height:auto; filter:blur(9px); transform:scale(1.06)}
+  .place-tags{display:flex; gap:10px; flex-wrap:wrap; margin:10px 2px 2px}
+  .p-chip{
+    display:inline-flex; align-items:center; gap:8px; padding:6px 12px;
+    border:1px solid rgba(255,255,255,.14); border-radius:999px;
+    background:rgba(255,255,255,.06); font-weight:800; font-size:13px; color:#e8eeff;
+  }
+  .p-dot{width:10px;height:10px;border-radius:50%}
+  .c-cyan{background:#67e8f9} .c-violet{background:#c4b5fd} .c-teal{background:#5eead4}
+  .c-yellow{background:#facc15} .c-green{background:#34d399} .c-gray{background:#e5e7eb}
+
+  .blurred{ filter: blur(7px); transition: filter .2s ease; user-select:none; -webkit-user-select:none; -ms-user-select:none; }
+  .row .name.blurred, .row .sub.blurred{ will-change:filter }
+  .blurred::selection{ background:transparent; color:transparent; }
 
   @media (max-width:720px){
     .tiles{grid-template-columns:repeat(2,1fr)}
+    .row{padding:10px} .av{width:24px;height:24px}
   }
-
-  /* Localisation */
-  .loc{
-    border:1px solid #1e293b; border-radius:18px;
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
-    backdrop-filter:blur(16px) saturate(160%);
-    box-shadow:var(--shadow);
-    padding:14px;
-    width:100%;
-    margin:18px 0;
-  }
-  .loc-head{display:flex;align-items:center;justify-content:space-between; padding:8px 6px 12px; border-bottom:1px solid rgba(255,255,255,.08)}
-  .loc-title{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}
-  .loc-chip{
-    padding:6px 10px; border-radius:999px; font-weight:800; font-size:12px;
-    color:#ffb4b4; border:1px solid rgba(255,86,86,.25); background:rgba(255,86,86,.08)
-  }
-  .loc-list{display:flex;flex-direction:column;gap:12px;padding:14px 6px 8px}
-  .loc-row{
-    display:flex;align-items:center;gap:10px;
-    padding:12px 14px;border-radius:14px;border:1px solid #1e293b; background:rgba(255,255,255,.04)
-  }
-  .loc-ico{
-    width:28px;height:28px;border-radius:10px;display:grid;place-items:center;
-    border:1px solid rgba(255,255,255,.18); background:#0f172a; font-size:16px; opacity:.95
-  }
-  .loc-txt{font-weight:800}
-
-  /* Floutage & protection */
-  .blurred{ filter: blur(7px); transition: filter .2s ease; user-select:none; -webkit-user-select:none; -ms-user-select:none; }
-  .row .name.blurred, .row .sub.blurred, .loc-txt.blurred{ will-change:filter }
-  .blurred::selection{ background:transparent; color:transparent; }
 </style>
 </head>
 <body>
@@ -151,44 +161,51 @@
     <!-- Header -->
     <header class="head">
       <h1 class="title">
-        Donnée Débloquer
+        Données débloquées
         <span class="ok-badge" title="Validation">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle cx="12" cy="12" r="10" fill="#fff" opacity=".18"/>
             <path d="M7 12.5l3 3 7-7" stroke="#0b1610" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Validé
         </span>
       </h1>
-      <div class="subtitle">Informations Extraite Avec Succes</div>
+      <div class="subtitle">Informations extraites avec succès</div>
     </header>
 
     <!-- Tiles -->
-    <section class="tiles">
+    <section class="tiles" aria-label="Indicateurs">
       <div class="tile">
         <div class="ico blu">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm8 8a8 8 0 1 0-16 0" stroke="#9cc2ff" stroke-width="2"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm8 8a8 8 0 1 0-16 0" stroke="#9cc2ff" stroke-width="2"/>
+          </svg>
         </div>
         <b>Amis</b>
-        <span id="friendsCount" class="blurred" data-protected>0</span>
+        <span id="friendsCount" class="blurred" data-protected aria-live="polite">0</span>
       </div>
       <div class="tile">
         <div class="ico vio">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 11v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-5M9 11V9a3 3 0 1 1 6 0v2" stroke="#d9c7ff" stroke-width="2"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7 11v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-5M9 11V9a3 3 0 1 1 6 0v2" stroke="#d9c7ff" stroke-width="2"/>
+          </svg>
         </div>
         <b>My Eyes Only</b>
-        <span id="meoCount" class="blurred" data-protected>0</span>
+        <span id="meoCount" class="blurred" data-protected aria-live="polite">0</span>
       </div>
       <div class="tile">
         <div class="ico ylw">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 22s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11Z" stroke="#ffe08a" stroke-width="2"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 22s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11Z" stroke="#ffe08a" stroke-width="2"/>
+          </svg>
         </div>
         <b>Snaps</b>
-        <span id="snapsCount" class="blurred" data-protected>0</span>
+        <span id="snapsCount" class="blurred" data-protected aria-live="polite">0</span>
       </div>
       <div class="tile">
         <div class="ico grn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 11h18M12 3v18" stroke="#9af5c0" stroke-width="2"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3 11h18M12 3v18" stroke="#9af5c0" stroke-width="2"/>
+          </svg>
         </div>
         <b>Localisation</b>
         <span class="blurred" data-protected>Partagée</span>
@@ -196,94 +213,126 @@
     </section>
 
     <!-- Unlock Banner -->
-    <section class="unlock">
-      <h3>Voir Toutes Les Données</h3>
-      <p>Pour Avoir Accès À Toutes Les Donnée Et Nous Rémunérer.</p>
-      <button class="cta" id="openUnlock">Débloquer Pour 2€</button>
-  <a class="cta" href="https://t.trklinkx.com/sl?id=68c966c4520e584c49c3e225&pid=4783" style="display:block;margin-top:12px;text-align:center;" target="_blank" rel="noopener">Accéder à l'offre spéciale</a>
+    <section class="unlock" aria-labelledby="unlockTitle">
+      <h3 id="unlockTitle">Voir toutes les données</h3>
+      <p>Pour avoir accès à toutes les données et nous rémunérer.</p>
+      <!-- href par défaut (sera remplacé par JS pour l’alternance) -->
+      <a class="cta" id="ctaUnlock" href="https://t.trklinkx.com/sl?id=63a14c808dec34873b60498f&amp;pid=4784">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 11v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4M9 11V9a3 3 0 1 1 6 0v2" stroke="#161717" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Débloquer maintenant pour 2&nbsp;€
+      </a>
     </section>
 
-    <!-- Liste d'amis -->
-    <section class="section" id="friends">
+    <!-- Amis -->
+    <section class="section" id="friends" aria-labelledby="friendsTitle">
       <div class="sec-head">
-        <div class="sec-title"><span>👥 Liste D’amis</span></div>
-        <div class="count"><span id="friendsShown">0</span> / <span id="friendsTotal">Total</span></div>
+        <div class="sec-title">
+          <span class="sec-ico">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm-8 8a8 8 0 1 1 16 0" stroke="#cfe1ff" stroke-width="2"/>
+            </svg>
+          </span>
+          <span id="friendsTitle">Liste d’amis</span>
+        </div>
+        <div class="count"><span id="friendsShown" aria-live="polite">0</span> / <span id="friendsTotal" class="myst" aria-live="polite">0</span></div>
       </div>
       <div class="list" id="friendsList"></div>
     </section>
 
-    <!-- My Eyes Only -->
-    <section class="section" id="meo">
+    <!-- MEO -->
+    <section class="section" id="meo" aria-labelledby="meoTitle">
       <div class="sec-head">
-        <div class="sec-title"><span>🔒 My Eyes Only</span></div>
-        <div class="count"><span id="meoShown">0</span> / <span id="meoTotal">Total</span></div>
+        <div class="sec-title">
+          <span class="sec-ico">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 12v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4M9 12v-2a3 3 0 1 1 6 0v2" stroke="#cfe1ff" stroke-width="2"/>
+            </svg>
+          </span>
+          <span id="meoTitle">My Eyes Only</span>
+        </div>
+        <div class="count"><span id="meoShown" aria-live="polite">0</span> / <span id="meoTotal" class="myst" aria-live="polite">0</span></div>
       </div>
       <div class="list" id="meoList"></div>
     </section>
 
     <!-- Snaps -->
-    <section class="section" id="snaps">
+    <section class="section" id="snaps" aria-labelledby="snapsTitle">
       <div class="sec-head">
-        <div class="sec-title"><span>📸 Snaps</span></div>
-        <div class="count"><span id="snapsShown">0</span> / <span id="snapsTotal">Total</span></div>
+        <div class="sec-title">
+          <span class="sec-ico">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="5" y="8" width="14" height="10" rx="2" stroke="#cfe1ff" stroke-width="2"/>
+              <circle cx="12" cy="13" r="3" stroke="#cfe1ff" stroke-width="2"/>
+              <rect x="8" y="6" width="3" height="2" rx="1" fill="#cfe1ff"/>
+            </svg>
+          </span>
+          <span id="snapsTitle">Snaps</span>
+        </div>
+        <div class="count"><span id="snapsShown" aria-live="polite">0</span> / <span id="snapsTotal" class="myst" aria-live="polite">0</span></div>
       </div>
       <div class="list" id="snapsList"></div>
     </section>
 
-    <!-- Localisation -->
+    <!-- Localisation (en bas) -->
     <section class="loc" aria-label="Localisation">
       <div class="loc-head">
         <div class="loc-title">
-          <span style="color:#ef4444">📍</span>
+          <span class="sec-ico">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11Z" stroke="#ffb3c0" stroke-width="2"/>
+              <circle cx="12" cy="10" r="2" fill="#ffb3c0"/>
+            </svg>
+          </span>
           <span>Localisation</span>
         </div>
-        <div class="loc-chip">Temps Réel (Si Activé)</div>
+        <div class="loc-chip">
+          Temps réel ·
+          <a id="activerLink" href="https://t.trklinkx.com/sl?id=63a14c808dec34873b60498f&amp;pid=4784">Activer</a>
+        </div>
       </div>
 
-      <div class="loc-list">
-        <div class="loc-row">
-          <div class="loc-ico">📍</div>
-          <div class="loc-txt blurred" data-protected>Position Actuelle</div>
-        </div>
-        <div class="loc-row">
-          <div class="loc-ico">📍</div>
-          <div class="loc-txt blurred" id="addrLine" data-protected>Adresse Estimée</div>
-        </div>
-        <div class="loc-row">
-          <div class="loc-ico">🧭</div>
-          <div class="loc-txt blurred" id="coordLine" data-protected>Coordonnées</div>
-        </div>
-        <div class="loc-row">
-          <div class="loc-ico">🕒</div>
-          <div class="loc-txt blurred" id="updLine" data-protected>Mise À Jour</div>
-        </div>
-        <div class="loc-row">
-          <div class="loc-ico">🎯</div>
-          <div class="loc-txt blurred" data-protected>Précision</div>
-        </div>
+      <div class="loc-map">
+        <img src="https://i.ibb.co/hxzWQYD3/Capture-d-e-cran-2025-09-16-a-07-35-43.png" alt="Aperçu localisation (flouté)">
+      </div>
+
+      <div class="place-tags" aria-hidden="true">
+        <span class="p-chip"><span class="p-dot c-cyan"></span>Maison</span>
+        <span class="p-chip"><span class="p-dot c-violet"></span>Lycée</span>
+        <span class="p-chip"><span class="p-dot c-teal"></span>Parc</span>
+        <span class="p-chip"><span class="p-dot c-yellow"></span>Cantine / Boulangerie</span>
+        <span class="p-chip"><span class="p-dot c-green"></span>Salle de sport</span>
+        <span class="p-chip"><span class="p-dot c-gray"></span>Arrêt de bus</span>
       </div>
     </section>
   </main>
 
-  <!-- Modal: Unlock -->
-  <div class="modal" id="modal">
-    <div class="sheet">
-      <h4>Débloquer L’analyse</h4>
-      <p>Ajoute Des Données <strong>Que Tu Possèdes</strong> Ou Autorise L’accès Pour Enrichir Le Rapport. Aucune Donnée N’est Collectée Sans Consentement.</p>
-      <div class="row-in" style="margin:10px 0 12px">
-        <input type="file" class="file" id="up" />
-        <button class="btn" id="importBtn">Importer</button>
-        <button class="ghost" id="closeModal">Annuler</button>
-      </div>
-      <small style="color:#a7b6d3">Accepté : CSV/JSON (Liste D’amis Publics, Métadonnées De Snaps, Etc.).</small>
-    </div>
-  </div>
-
 <script>
 (function(){
-  // données démo (légales)
+  // ===== Rotation des liens d’affiliation (alternance 1/2 au chargement) =====
+  const AFF_URLS = [
+    'https://t.trklinkx.com/sl?id=63a14c808dec34873b60498f&pid=4784',
+    'https://t.trklinkx.com/sl?id=68c966c4520e584c49c3e225&pid=4783'
+  ];
+  function pickAffiliateUrl(){
+    const k = 'AFF_ROT_IDX';
+    let idx = parseInt(localStorage.getItem(k) || '0', 10);
+    const url = AFF_URLS[idx % AFF_URLS.length];
+    localStorage.setItem(k, String((idx + 1) % AFF_URLS.length));
+    return url;
+  }
+  const AFF_URL = pickAffiliateUrl();
+
+  // Applique le lien alterné sur le bouton et le lien "Activer"
+  const cta = document.getElementById('ctaUnlock');
+  if (cta) cta.href = AFF_URL;
+  const act = document.getElementById('activerLink');
+  if (act) act.href = AFF_URL;
+
+  // ===== Données démo (légales) =====
   const data = {
-    friends: Array.from({length:10}).map((_,i)=>({name:`ami_${i+1}`, since:`${2019 + (i%5)} · Suivi Mutuel`})),
+    friends: Array.from({length:8}).map((_,i)=>({name:`ami_${i+1}`, since:`${2019 + (i%5)} · suivi mutuel`})),
     meo: Array.from({length:8}).map((_,i)=>({title:`album_${i+1}_${Math.random().toString(36).slice(2,8)}`, size:`${(Math.random()*40+10).toFixed(1)} Mo`})),
     snaps: Array.from({length:8}).map((_,i)=>({title:`snap_${String(i+1).padStart(3,'0')}.mp4`, date:`${(10+i)}/08/2025`}))
   };
@@ -291,103 +340,80 @@
   const friendsList = document.getElementById('friendsList');
   const meoList = document.getElementById('meoList');
   const snapsList = document.getElementById('snapsList');
-
   const cap = s => s.replace(/\b\p{L}/gu, c => c.toLocaleUpperCase());
 
   function rowFriend(item){
     const el = document.createElement('div');
     el.className = 'row';
     el.innerHTML = `
-      <div class="av"></div>
+      <div class="av" aria-hidden="true"></div>
       <div class="txt">
         <div class="name blurred" data-protected>${cap(item.name.replace(/_/g,' '))}</div>
         <div class="sub blurred" data-protected>${item.since}</div>
-      </div>
-    `;
+      </div>`;
     return el;
   }
-
   function rowMeo(item){
     const el = document.createElement('div');
     el.className = 'row';
     el.innerHTML = `
-      <span class="dot vio"></span>
+      <span class="dot vio" aria-hidden="true"></span>
       <div class="txt">
         <div class="name blurred" data-protected>${item.title}</div>
         <div class="sub blurred" data-protected>${item.size}</div>
       </div>
-      <div class="dl" title="Télécharger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4 4-4M5 21h14" stroke="#cfe1ff" stroke-width="2" stroke-linecap="round"/></svg></div>
-    `;
+      <button class="dl" type="button" title="Télécharger" aria-label="Télécharger">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4 4-4M5 21h14" stroke="#cfe1ff" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>`;
     return el;
   }
-
   function rowSnap(item){
     const el = document.createElement('div');
     el.className = 'row';
     el.innerHTML = `
-      <span class="dot ylw"></span>
+      <span class="dot ylw" aria-hidden="true"></span>
       <div class="txt">
         <div class="name blurred" data-protected>${item.title}</div>
         <div class="sub blurred" data-protected>${item.date}</div>
       </div>
-      <div class="dl" title="Télécharger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4 4-4M5 21h14" stroke="#cfe1ff" stroke-width="2" stroke-linecap="round"/></svg></div>
-    `;
+      <button class="dl" type="button" title="Télécharger" aria-label="Télécharger">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4 4-4M5 21h14" stroke="#cfe1ff" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>`;
     return el;
   }
 
-  data.friends.forEach(i=>friendsList.appendChild(rowFriend(i)));
-  data.meo.forEach(i=>meoList.appendChild(rowMeo(i)));
-  data.snaps.forEach(i=>snapsList.appendChild(rowSnap(i)));
-
-  const set = (id, v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
-  set('friendsCount', data.friends.length);
-  set('friendsShown', data.friends.length);
-  set('friendsTotal', 'Total');
-  set('meoCount', data.meo.length);
-  set('meoShown', data.meo.length);
-  set('meoTotal', 'Total');
-  set('snapsCount', data.snaps.length);
-  set('snapsShown', data.snaps.length);
-  set('snapsTotal', 'Total');
-
-  // Modal
-  const modal = document.getElementById('modal');
-  document.getElementById('openUnlock').addEventListener('click', ()=> modal.classList.add('show'));
-  document.getElementById('closeModal').addEventListener('click', ()=> modal.classList.remove('show'));
-  document.getElementById('importBtn').addEventListener('click', ()=>{
-    const f = document.getElementById('up').files?.[0];
-    alert(f ? `Fichier reçu: ${f.name}` : `Choisis un fichier d'abord.`);
-  });
-
-  // Valeurs de localisation (démo)
-  (function(){
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2,'0');
-    const mm = String(now.getMinutes()).padStart(2,'0');
-    const exCity = "Paris 75002";
-    const exLat  = "48.867° N";
-    const exLng  = "2.343° E";
-    const addr = document.getElementById('addrLine');
-    const coord= document.getElementById('coordLine');
-    const upd  = document.getElementById('updLine');
-    if(addr) addr.textContent = exCity;
-    if(coord) coord.textContent = `${exLat}, ${exLng}`;
-    if(upd) upd.textContent = `Mis À Jour À ${hh}h${mm}`;
-  })();
-
-  // Protection copie : bloque si sélection sur du flouté
-  document.addEventListener('copy', function(e){
-    const selection = window.getSelection();
-    if(!selection || selection.rangeCount === 0) return;
-    const range = selection.getRangeAt(0);
-    const blurred = document.querySelectorAll('.blurred');
-    for(const el of blurred){
-      try{
-        if(range.intersectsNode(el)){ e.preventDefault(); return; }
-      }catch(_){}
+  function renderList(container, items, factory, emptyText){
+    container.innerHTML = '';
+    if(!items.length){
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      emptyText && (empty.textContent = emptyText);
+      container.appendChild(empty);
+      return;
     }
-  });
+    items.forEach(i=>container.appendChild(factory(i)));
+  }
+  renderList(friendsList, data.friends, rowFriend, 'Aucun ami affiché pour le moment.');
+  renderList(meoList, data.meo, rowMeo, 'Aucun contenu “My Eyes Only”.');
+  renderList(snapsList, data.snaps, rowSnap, 'Aucun snap listé.');
 
+  // Compteurs (le 2e est flouté via .myst)
+  const set = (id, v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('friendsShown', data.friends.length); set('friendsTotal', data.friends.length);
+  set('meoShown', data.meo.length); set('meoTotal', data.meo.length);
+  set('snapsShown', data.snaps.length); set('snapsTotal', data.snaps.length);
+  set('friendsCount', data.friends.length);
+  set('meoCount', data.meo.length);
+  set('snapsCount', data.snaps.length);
+
+  // Téléchargement verrouillé -> message + redirection (utilise l’URL alternée)
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.dl');
+    if(!btn) return;
+    e.preventDefault();
+    const go = confirm('Contenu verrouillé.\nPour débloquer, payez 2 €.\n\nSouhaitez-vous continuer ?');
+    if(go){ window.location.href = AFF_URL; }
+  });
 })();
 </script>
 </body>
