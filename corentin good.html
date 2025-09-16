@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Snapix — Accueil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#07090d;
+      --glass:rgba(255,255,255,.06);
+      --glass-2:rgba(255,255,255,.04);
+      --stroke:rgba(255,255,255,.14);
+      --text:#eef3ff;
+      --muted:#b2bdcf;
+      --ghost:#ff2d55;
+      --ghost-2:#ff3b3b;
+      --radius:20px;
+      --blur:blur(16px) saturate(160%);
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --green:#22c55e; --blue:#3b82f6; --yellow:#facc15;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      font-family:'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg); color:var(--text);
+      display:flex; flex-direction:column; align-items:center;
+      padding:8px 18px 0; /* pas d’espace en bas */
+      overflow-x:hidden;
+    }
+
+    /* Lueurs */
+    .orb{position:fixed; inset:auto; width:680px; height:680px; border-radius:50%; pointer-events:none; filter:blur(90px); opacity:.18; mix-blend-mode:screen; z-index:0 !important}
+    .orb.o1{top:-240px; left:50%; width:600px; height:600px; transform:translateX(-50%); background:radial-gradient(circle at 50% 50%, rgba(255,45,85,.28), transparent 62%)}
+    .orb.o2{bottom:-280px; right:-260px; width:520px; height:520px; background:radial-gradient(circle at 40% 50%, rgba(255,59,59,.22), transparent 64%)}
+    .orb.o3{bottom:-320px; left:-260px; width:520px; height:520px; background:radial-gradient(circle at 60% 40%, rgba(180,20,40,.18), transparent 68%)}
+    .orb.v1{top:10%; left:-80px; width:560px; height:560px; opacity:.20; filter:blur(90px); background:radial-gradient(circle at 60% 40%, rgba(167,139,250,.45), transparent 62%)}
+    .orb.v2{bottom:-80px; left:48%; transform:translateX(-50%); width:520px; height:520px; opacity:.16; filter:blur(100px); background:radial-gradient(circle at 50% 50%, rgba(147,112,255,.38), transparent 64%)}
+
+    .wrap{width:min(760px,100%); position:relative; z-index:1; margin-bottom:0}
+
+    .logo{display:flex; flex-direction:column; align-items:center; gap:8px; margin:8px 0 12px !important}
+    .ghost{width:56px; height:56px; border-radius:16px; display:grid; place-items:center}
+    .ghost svg{filter:drop-shadow(0 10px 30px #ff2d5533)}
+    .title{font-weight:900; font-size:clamp(34px,7vw,44px); letter-spacing:.2px; background:linear-gradient(180deg,var(--ghost),var(--ghost-2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .subtitle{margin:2px 0 22px; color:var(--muted); font-weight:600; text-align:center; font-size:clamp(15px,2.6vw,18px)}
+
+    .glass{
+      background:linear-gradient(180deg, var(--glass), var(--glass-2));
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      backdrop-filter:var(--blur);
+      -webkit-backdrop-filter:var(--blur);
+      box-shadow:var(--shadow);
+    }
+
+    .card{display:flex; align-items:center; gap:14px; padding:18px; margin:14px 0}
+    .ico{width:48px; height:48px; border-radius:14px; display:grid; place-items:center; flex:0 0 48px;
+         background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+         border:1px solid rgba(255,255,255,.18); backdrop-filter:blur(8px) saturate(150%)}
+    .card h3{margin:0; font-size:17px}
+    .card p{margin:4px 0 0; color:var(--muted); font-weight:600}
+
+    /* Bloc entrée + badges + étoiles */
+    .input-wrap{padding:18px; margin-top:18px; margin-bottom:0}
+    .input{width:100%; height:54px; border-radius:14px; border:1px solid rgba(255,255,255,.15);
+           background:rgba(7,9,13,.55); color:var(--text); padding:0 16px; font-size:16px; outline:none;
+           backdrop-filter:blur(12px) saturate(140%)}
+    .input::placeholder{color:#90a2bf}
+    .cta{width:100%; height:54px; margin-top:14px; border-radius:16px; border:1px solid rgba(255,45,85,.45);
+         font-weight:900; font-size:18px; cursor:pointer;
+         background:linear-gradient(90deg, var(--ghost) 0%, var(--ghost-2) 100%);
+         color:#fff; box-shadow:0 28px 70px rgba(255,45,85,.25)}
+    .cta:active{transform:translateY(1px)}
+
+    .mini-badges{
+      display:flex; justify-content:center; align-items:center;
+      gap:10px; margin-top:12px; flex-wrap:nowrap; white-space:nowrap;
+      overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+    }
+    .mini-badges::-webkit-scrollbar{display:none;}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid var(--stroke); backdrop-filter:blur(10px) saturate(160%);
+      font-weight:800; font-size:12px; line-height:1;
+    }
+    .dot{width:6px;height:6px;border-radius:50%}
+    .dot.blue{background:var(--blue); box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+    .dot.green{background:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,.2)}
+    .dot.yellow{background:var(--yellow); box-shadow:0 0 0 3px rgba(250,204,21,.25)}
+
+    .mini-rating{
+      margin-top:10px;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      color:#e9f1ff; font-weight:900; font-size:14px;
+    }
+    .mini-rating .stars{letter-spacing:1px}
+    .mini-rating .full{color:#ffd166}
+    .mini-rating .half{background:linear-gradient(90deg,#ffd166 0 50%, #303642 50%); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .mini-rating small{color:#b8c6de; font-weight:700}
+
+    @media (max-width:520px){
+      .ico{width:42px;height:42px;border-radius:12px}
+      .card{padding:16px}
+      .card h3{font-size:16px}
+      .badge{padding:5px 8px; font-size:11px}
+      .dot{width:5px;height:5px}
+      .mini-rating{font-size:13px}
+    }
+  </style>
+</head>
+<body>
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+  <div class="orb v1"></div>
+  <div class="orb v2"></div>
+
+  <main class="wrap">
+    <div class="logo">
+      <div class="ghost" aria-hidden="true">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 21c-1 0-1-1-2-1s-1 1-2 1c0-3 0-6 1-9 1-4 4-7 8-7s7 3 8 7c1 3 1 6 1 9-1 0-1-1-2-1s-1 1-2 1-1-1-2-1-1 1-2 1-1-1-2-1-1 1-2 1Z" fill="#ff2d55" opacity=".92"/>
+        </svg>
+      </div>
+      <div class="title">Snapix</div>
+      <div class="subtitle">Découvre ce que cache ton partenaire</div>
+    </div>
+
+    <div class="card glass">
+      <div class="ico">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm14 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 17a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm14 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke="#b8c9ff" stroke-width="2"/></svg>
+      </div>
+      <div>
+        <h3>Liste d'amis</h3>
+        <p>Vois tous les contacts</p>
+      </div>
+    </div>
+
+    <div class="card glass">
+      <div class="ico">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 11v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-5M9 11V9a3 3 0 1 1 6 0v2" stroke="#ccb8ff" stroke-width="2"/></svg>
+      </div>
+      <div>
+        <h3>My Eyes Only</h3>
+        <p>Accède au contenu privé</p>
+      </div>
+    </div>
+
+    <div class="card glass">
+      <div class="ico">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11Z" stroke="#ff9a9a" stroke-width="2"/></svg>
+      </div>
+      <div>
+        <h3>Localisation</h3>
+        <p>Position exacte en temps réel</p>
+      </div>
+    </div>
+
+    <div class="card glass">
+      <div class="ico">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z" stroke="#a8e2ff" stroke-width="2"/></svg>
+      </div>
+      <div>
+        <h3>Discussions</h3>
+        <p>Messages et conversations privées</p>
+      </div>
+    </div>
+
+    <!-- Input + CTA + badges + étoiles -->
+    <div class="input-wrap glass">
+      <input class="input" id="user" placeholder="Nom d'utilisateur Snapchat" autocomplete="off" aria-label="Nom d'utilisateur Snapchat" />
+      <button class="cta" id="start">Commencer</button>
+
+      <div class="mini-badges" aria-hidden="true">
+        <div class="badge"><span class="dot blue"></span>100% anonyme</div>
+        <div class="badge"><span class="dot green"></span>Résultats instantanés</div>
+        <div class="badge"><span class="dot yellow"></span>Aucune détection</div>
+      </div>
+
+      <div class="mini-rating" aria-label="Note des utilisateurs">
+        <div class="stars" aria-hidden="true">
+          <span class="full">★</span><span class="full">★</span><span class="full">★</span><span class="full">★</span><span class="half">★</span>
+        </div>
+        <div>4,3 <small>/ 5</small></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+  // Validation + redirection
+  document.getElementById('start').addEventListener('click',()=>{
+    const u=document.getElementById('user').value.trim();
+    if(!/^@?[a-zA-Z0-9._]{3,30}$/.test(u||'')){
+      const el=document.getElementById('user');
+      el.style.boxShadow='0 0 0 3px rgba(255,45,85,.35)';
+      el.focus();
+      return;
+    }
+    const btn=document.getElementById('start');
+    btn.textContent='Analyse…';
+    setTimeout(()=>{ window.location.href='analyse.html'; }, 1200);
+  });
+  </script>
+</body>
+</html>

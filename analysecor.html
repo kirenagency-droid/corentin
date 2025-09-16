@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Snapseen — Analyse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#07090d;
+      --ink:#eef3ff;
+      --muted:#b2bdcf;
+      --line:#1b2330;
+      --glass:rgba(255,255,255,.06);
+      --glass-2:rgba(255,255,255,.04);
+      --stroke:rgba(255,255,255,.14);
+      --green:#16a34a;
+      --red:#ef4444;
+      --accent:#ff2d55;   /* rouge/rose */
+      --accent2:#ff3b3b;  /* rouge */
+      --radius:18px; --radius-lg:22px;
+      --blur:blur(16px) saturate(160%);
+      --shadow:0 20px 60px rgba(0,0,0,.55);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;min-height:100vh}
+    body{
+      margin:0; font-family:'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      display:flex; flex-direction:column; align-items:center;
+      padding:18px 18px 56px; overflow-x:hidden;
+    }
+
+    /* Lueurs (rouge principal + violet léger) */
+    .orb{position:fixed; inset:auto; border-radius:50%; pointer-events:none; mix-blend-mode:screen; filter:blur(90px); opacity:.18; z-index:0}
+    .o1{top:-220px; left:50%; transform:translateX(-50%); width:700px; height:700px; background:radial-gradient(circle at 50% 50%, rgba(255,45,85,.32), transparent 64%)}
+    .o2{bottom:-280px; right:-260px; width:620px; height:620px; background:radial-gradient(circle at 40% 50%, rgba(255,59,59,.22), transparent 66%)}
+    .v1{top:12%; left:-140px; width:520px; height:520px; opacity:.12; filter:blur(110px); background:radial-gradient(circle at 60% 40%, rgba(167,139,250,.40), transparent 65%)}
+    .v2{bottom:-120px; left:48%; transform:translateX(-50%); width:460px; height:460px; opacity:.10; filter:blur(110px); background:radial-gradient(circle at 40% 50%, rgba(147,112,255,.36), transparent 66%)}
+
+    .wrap{width:min(900px,100%); position:relative; z-index:1}
+
+    /* Header simple */
+    .head{display:flex; flex-direction:column; align-items:center; gap:8px; margin:10px 0 18px}
+    .wifi{width:56px;height:56px;border-radius:16px;display:grid;place-items:center; position:relative}
+    .wifi::before{content:"";position:absolute;inset:-24px;filter:blur(28px);background:radial-gradient(circle at 50% 40%, rgba(255,45,85,.22), transparent 60%)}
+    .title{font-size:clamp(20px,4vw,32px);font-weight:800;text-align:center}
+    .sub{color:var(--muted);font-weight:600;text-align:center}
+
+    /* Progress */
+    .progress{margin:18px 0 8px}
+    .bar-wrap{height:12px;border-radius:999px;background:#1b2230;border:1px solid var(--line);overflow:hidden}
+    .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s cubic-bezier(.2,.9,.2,1)}
+    .pct{text-align:right;color:#c9d6ee;font-weight:800;margin-top:6px}
+
+    /* Cards */
+    .card{display:flex;align-items:flex-start;gap:14px;padding:16px;border-radius:var(--radius-lg);
+          background:linear-gradient(180deg,var(--glass),var(--glass-2));
+          border:1px solid var(--stroke); backdrop-filter:var(--blur); box-shadow:var(--shadow); margin:12px 0}
+    .icon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:0 0 32px}
+    .ok{background:linear-gradient(180deg,#24d16333,#0f3b2522); border:1px solid #2bbf6e88}
+    .warn{background:linear-gradient(180deg,#ff636333,#3c0e1211); border:1px solid #ff636388}
+    .idle{background:linear-gradient(180deg,#ffffff11,#0b111811); border:1px solid #ffffff22}
+    .txt{flex:1}
+    .h{margin:0 0 4px;font-size:16px;font-weight:800}
+    .p{margin:0;color:#c3d0e7;font-weight:600}
+
+    /* In-step mini bar */
+    .mini{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .mini-bar{width:56px;height:8px;border-radius:999px;background:#2a313f;border:1px solid #3a4356;overflow:hidden}
+    .mini-fill{height:100%;width:0%;background:linear-gradient(90deg,#ff6a6a,#ff3b3b)}
+
+    /* Footer warn */
+    .foot{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;color:#ffb4b4;font-weight:700}
+
+    .stack{margin-top:8px}
+
+    /* === Apparition progressive (pro) === */
+    .reveal{opacity:0; transform:translateY(10px); filter:blur(1px) saturate(.95)}
+    .reveal.show{opacity:1; transform:none; filter:none; transition:opacity .5s ease, transform .5s ease, filter .5s ease}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1; transform:none; filter:none}}
+  </style>
+</head>
+<body>
+  <!-- Background glows -->
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb v1"></div>
+  <div class="orb v2"></div>
+
+  <main class="wrap">
+    <header class="head reveal">
+      <div class="wifi" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M4 9.5a12 12 0 0 1 16 0M7 12.5a8 8 0 0 1 10 0M10 15.5a4 4 0 0 1 4 0M12 20h0" stroke="#ff808d" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <h1 class="title" id="pageTitle">Analyse</h1>
+      <p class="sub">Extraction des données en cours…</p>
+    </header>
+
+    <!-- Progress global -->
+    <section class="progress reveal" aria-label="Progression globale">
+      <div class="bar-wrap"><div class="bar" id="bar"></div></div>
+      <div class="pct" id="pct">0%</div>
+    </section>
+
+    <!-- Steps -->
+    <div class="stack" id="steps">
+      <div class="card reveal">
+        <div class="icon ok">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 12.5l3 3 7-7" stroke="#86efac" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="txt">
+          <div class="h">Connexion aux serveurs Snapchat…</div>
+          <p class="p">Établissement de la connexion sécurisée</p>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon ok">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 12.5l3 3 7-7" stroke="#86efac" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="txt">
+          <div class="h">Contournement des protections…</div>
+          <p class="p">Bypass des systèmes de sécurité</p>
+        </div>
+      </div>
+
+      <div class="card reveal" id="activeStep">
+        <div class="icon warn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 17h.01" stroke="#ff9c9c" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="txt">
+          <div class="h" id="activeTitle" role="status" aria-live="polite">Recherche du profil utilisateur…</div>
+          <p class="p" id="activeDesc">Localisation de <span id="who">@utilisateur</span></p>
+        </div>
+        <div class="mini">
+          <div class="mini-bar"><div class="mini-fill" id="mini"></div></div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon idle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#cfd8ea" stroke-width="2"/></svg>
+        </div>
+        <div class="txt">
+          <div class="h">Extraction des données privées…</div>
+          <p class="p">Récupération des informations confidentielles</p>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon idle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#cfd8ea" stroke-width="2"/></svg>
+        </div>
+        <div class="txt">
+          <div class="h">Décryptage des informations…</div>
+          <p class="p">Déchiffrement des données sensibles</p>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="icon idle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#cfd8ea" stroke-width="2"/></svg>
+        </div>
+        <div class="txt">
+          <div class="h">Finalisation…</div>
+          <p class="p">Préparation des résultats</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot reveal">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 17h.01" stroke="#ffb4b4" stroke-width="2" stroke-linecap="round"/></svg>
+      Ne ferme pas cette page pendant l'extraction
+    </div>
+  </main>
+
+  <script>
+  (function(){
+    // Titre et pseudo depuis URL / sessionStorage
+    const qp = new URLSearchParams(location.search);
+    const name = qp.get('u') || qp.get('user') || qp.get('username') || sessionStorage.getItem('username') || '@utilisateur';
+    document.getElementById('who').textContent = name;
+    document.getElementById('pageTitle').textContent = `Analyse de ${name}`;
+
+    // Apparition progressive (stagger)
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const items=[...document.querySelectorAll('.reveal')];
+      items.forEach((el,i)=> setTimeout(()=> el.classList.add('show'), 120 + i*90));
+      if('IntersectionObserver' in window){
+        const io=new IntersectionObserver((entries)=>{
+          entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target);} });
+        },{threshold:.15});
+        document.querySelectorAll('.reveal:not(.show)').forEach(el=> io.observe(el));
+      }
+    });
+
+    // Animation des barres
+    const bar = document.getElementById('bar');
+    const pct = document.getElementById('pct');
+    const mini = document.getElementById('mini');
+
+    let p = 0, miniP = 0;
+    function tick(){
+      p += (p < 60 ? 1.6 : p < 85 ? 0.6 : 0.25);
+      if(p > 98) p = 98;
+      bar.style.width = p + '%';
+      pct.textContent = Math.round(p) + '%';
+
+      miniP += (miniP < 85 ? 2.2 : 0.6);
+      if(miniP > 98) miniP = 12;
+      mini.style.width = miniP + '%';
+    }
+    const t = setInterval(tick, 90);
+
+    // Simuler les étapes
+    setTimeout(()=>{
+      const active = document.getElementById('activeStep');
+      active.querySelector('.icon').className = 'icon ok';
+      active.querySelector('.icon').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 12.5l3 3 7-7" stroke="#86efac" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      document.getElementById('activeTitle').textContent = 'Profil localisé';
+      document.getElementById('activeDesc').textContent = 'Identifiant confirmé';
+      active.querySelector('.mini').remove();
+
+      const step4 = document.querySelectorAll('.card')[3];
+      step4.querySelector('.icon').className = 'icon warn';
+      step4.querySelector('.icon').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 17h.01" stroke="#ff9c9c" stroke-width="2.2" stroke-linecap="round"/></svg>';
+    }, 4200);
+
+    setTimeout(()=>{
+      clearInterval(t);
+      bar.style.transition = 'width .8s ease';
+      bar.style.width = '100%';
+      pct.textContent = '100%';
+      setTimeout(()=>{ window.location.href = 'resultats.html'; }, 1100);
+    }, 10500);
+  })();
+  </script>
+</body>
+</html>
