@@ -1,243 +1,396 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Snapseen — Analyse</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#07090d;
-      --ink:#eef3ff;
-      --muted:#b2bdcf;
-      --line:#1b2330;
-      --glass:rgba(255,255,255,.06);
-      --glass-2:rgba(255,255,255,.04);
-      --stroke:rgba(255,255,255,.14);
-      --green:#16a34a;
-      --red:#ef4444;
-      --accent:#ff2d55;   /* rouge/rose */
-      --accent2:#ff3b3b;  /* rouge */
-      --radius:18px; --radius-lg:22px;
-      --blur:blur(16px) saturate(160%);
-      --shadow:0 20px 60px rgba(0,0,0,.55);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;min-height:100vh}
-    body{
-      margin:0; font-family:'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:var(--bg);
-      color:var(--ink);
-      display:flex; flex-direction:column; align-items:center;
-      padding:18px 18px 56px; overflow-x:hidden;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Tableau — Données Publiques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07090d; --ink:#eef3ff; --muted:#b8c5dd; --line:#1b2330;
+    --glass:rgba(255,255,255,.06); --glass2:rgba(255,255,255,.045); --stroke:rgba(255,255,255,.12);
+    --red:#ff2d55; --red2:#ff3b3b; --vio:#a78bfa; --ylw:#facc15; --grn:#22c55e; --blu:#60a5fa;
+    --radius:16px; --radius-lg:18px; --blur:blur(16px) saturate(160%); --shadow:0 22px 60px rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink);
+    /* Fond : rouge principal + points de lueur violets/verts très légers */
+    background:
+      radial-gradient(900px 600px at 85% -10%, rgba(255,45,85,.18), transparent 60%),
+      radial-gradient(800px 500px at 10% 110%, rgba(167,139,250,.14), transparent 60%),
+      radial-gradient(6px 6px at 20% 30%, rgba(167,139,250,.20), transparent 60%),
+      radial-gradient(4px 4px at 72% 22%, rgba(34,197,94,.20), transparent 60%),
+      radial-gradient(5px 5px at 58% 78%, rgba(167,139,250,.16), transparent 60%),
+      radial-gradient(4px 4px at 12% 82%, rgba(34,197,94,.18), transparent 60%),
+      var(--bg);
+    padding:18px 12px 60px;
+    background-attachment: fixed;
+  }
+  .wrap{width:min(980px,100%); margin:0 auto}
 
-    /* Lueurs (rouge principal + violet léger) */
-    .orb{position:fixed; inset:auto; border-radius:50%; pointer-events:none; mix-blend-mode:screen; filter:blur(90px); opacity:.18; z-index:0}
-    .o1{top:-220px; left:50%; transform:translateX(-50%); width:700px; height:700px; background:radial-gradient(circle at 50% 50%, rgba(255,45,85,.32), transparent 64%)}
-    .o2{bottom:-280px; right:-260px; width:620px; height:620px; background:radial-gradient(circle at 40% 50%, rgba(255,59,59,.22), transparent 66%)}
-    .v1{top:12%; left:-140px; width:520px; height:520px; opacity:.12; filter:blur(110px); background:radial-gradient(circle at 60% 40%, rgba(167,139,250,.40), transparent 65%)}
-    .v2{bottom:-120px; left:48%; transform:translateX(-50%); width:460px; height:460px; opacity:.10; filter:blur(110px); background:radial-gradient(circle at 40% 50%, rgba(147,112,255,.36), transparent 66%)}
+  /* Header */
+  .head{display:flex; flex-direction:column; gap:8px; align-items:center; margin:6px 0 14px; position:relative}
+  .title{font-size:clamp(20px,5vw,30px); font-weight:900; text-align:center; letter-spacing:.2px; display:flex; gap:10px; align-items:center}
+  .subtitle{color:var(--muted); font-weight:700; text-align:center; font-size:14px; letter-spacing:.15px}
 
-    .wrap{width:min(900px,100%); position:relative; z-index:1}
+  /* Badge validation */
+  .ok-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px; border-radius:999px; font-weight:900; font-size:12px;
+    color:#0b1610; background:linear-gradient(180deg,#34d399,#22c55e);
+    border:1px solid rgba(255,255,255,.22);
+    box-shadow:0 10px 24px rgba(34,197,94,.25), 0 0 0 6px rgba(34,197,94,.10);
+  }
+  .ok-badge svg{display:block}
 
-    /* Header simple */
-    .head{display:flex; flex-direction:column; align-items:center; gap:8px; margin:10px 0 18px}
-    .wifi{width:56px;height:56px;border-radius:16px;display:grid;place-items:center; position:relative}
-    .wifi::before{content:"";position:absolute;inset:-24px;filter:blur(28px);background:radial-gradient(circle at 50% 40%, rgba(255,45,85,.22), transparent 60%)}
-    .title{font-size:clamp(20px,4vw,32px);font-weight:800;text-align:center}
-    .sub{color:var(--muted);font-weight:600;text-align:center}
+  /* Top pills */
+  .tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:12px 0 16px}
+  .tile{
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    border:1px solid var(--stroke); border-radius:14px; padding:12px 8px;
+    background:linear-gradient(180deg,var(--glass),var(--glass2)); backdrop-filter:var(--blur); box-shadow:var(--shadow);
+  }
+  .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.18)}
+  .ico.blu{background:linear-gradient(180deg,#1e293b,#0b1320)}  .ico.vio{background:linear-gradient(180deg,#2a2040,#141022)}
+  .ico.ylw{background:linear-gradient(180deg,#3f2e06,#1a1402)}  .ico.grn{background:linear-gradient(180deg,#0e2a14,#07140b)}
+  .tile b{font-size:13px}
+  .tile span{font-size:12px; color:#c8d3ea}
 
-    /* Progress */
-    .progress{margin:18px 0 8px}
-    .bar-wrap{height:12px;border-radius:999px;background:#1b2230;border:1px solid var(--line);overflow:hidden}
-    .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s cubic-bezier(.2,.9,.2,1)}
-    .pct{text-align:right;color:#c9d6ee;font-weight:800;margin-top:6px}
+  /* Unlock banner */
+  .unlock{
+    border:1px solid var(--stroke); border-radius:18px; padding:22px 14px;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    box-shadow:var(--shadow); position:relative; overflow:hidden; margin:8px 0 18px;
+  }
+  .unlock::before{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(1200px 400px at 50% -40px, rgba(255,45,85,.25), transparent 60%);
+    pointer-events:none; opacity:.9;
+  }
+  .unlock h3{margin:0 0 6px; text-align:center; font-size:16px}
+  .unlock p{margin:0 0 12px; text-align:center; color:#d7e1f6; font-size:12.5px}
+  .cta{
+    display:block; margin:0 auto; padding:10px 14px; font-weight:900; font-size:13.5px; letter-spacing:.2px;
+    color:#0b0f17; background:linear-gradient(90deg,var(--red),var(--red2)); border:1px solid rgba(255,255,255,.22);
+    border-radius:999px; cursor:pointer; box-shadow:0 16px 40px rgba(255,45,85,.28);
+  }
 
-    /* Cards */
-    .card{display:flex;align-items:flex-start;gap:14px;padding:16px;border-radius:var(--radius-lg);
-          background:linear-gradient(180deg,var(--glass),var(--glass-2));
-          border:1px solid var(--stroke); backdrop-filter:var(--blur); box-shadow:var(--shadow); margin:12px 0}
-    .icon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:0 0 32px}
-    .ok{background:linear-gradient(180deg,#24d16333,#0f3b2522); border:1px solid #2bbf6e88}
-    .warn{background:linear-gradient(180deg,#ff636333,#3c0e1211); border:1px solid #ff636388}
-    .idle{background:linear-gradient(180deg,#ffffff11,#0b111811); border:1px solid #ffffff22}
-    .txt{flex:1}
-    .h{margin:0 0 4px;font-size:16px;font-weight:800}
-    .p{margin:0;color:#c3d0e7;font-weight:600}
+  /* Sections */
+  .section{border:1px solid var(--stroke); border-radius:18px; background:linear-gradient(180deg,var(--glass),var(--glass2)); backdrop-filter:var(--blur); box-shadow:var(--shadow); margin:18px 0; overflow:hidden}
+  .sec-head{display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid var(--stroke)}
+  .sec-title{display:flex; align-items:center; gap:10px; font-weight:900}
+  .count{font-size:12px; color:#cfe1ff; border:1px solid var(--stroke); border-radius:999px; padding:4px 8px; background:rgba(255,255,255,.06)}
+  .list{display:flex; flex-direction:column}
+  .row{
+    display:flex; align-items:center; gap:12px; padding:12px; border-top:1px solid rgba(255,255,255,.06);
+    background:rgba(255,255,255,.02);
+  }
+  .row:first-child{border-top:none}
+  .av{width:28px;height:28px;border-radius:999px; background:linear-gradient(180deg,#1f2937,#0b1220); border:1px solid rgba(255,255,255,.25)}
+  .dot{width:8px;height:8px;border-radius:50%}
+  .dot.vio{background:#a78bfa} .dot.ylw{background:#facc15}
+  .txt{flex:1; min-width:0}
+  .name{font-weight:800; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .sub{color:#bacee8; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .dl{margin-left:auto; display:grid; place-items:center; width:28px;height:28px;border-radius:8px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); cursor:pointer}
 
-    /* In-step mini bar */
-    .mini{margin-left:auto;display:flex;align-items:center;gap:10px}
-    .mini-bar{width:56px;height:8px;border-radius:999px;background:#2a313f;border:1px solid #3a4356;overflow:hidden}
-    .mini-fill{height:100%;width:0%;background:linear-gradient(90deg,#ff6a6a,#ff3b3b)}
+  /* Modal */
+  .modal{position:fixed; inset:0; display:none; place-items:center; background:rgba(3,8,16,.6); backdrop-filter:blur(6px); z-index:10}
+  .modal.show{display:grid}
+  .sheet{width:min(520px,92vw); border:1px solid var(--stroke); border-radius:18px; padding:16px; background:linear-gradient(180deg,var(--glass),var(--glass2)); box-shadow:var(--shadow)}
+  .sheet h4{margin:0 0 8px}
+  .sheet p{margin:0 0 12px; color:#cfe1ff}
+  .row-in{display:flex; gap:8px; align-items:center}
+  .file{flex:1; height:42px; border-radius:12px; border:1px solid var(--stroke); background:#0b1220; color:#0b0f17; padding:0 12px}
+  .btn{height:42px; border-radius:12px; border:1px solid rgba(255,255,255,.2); background:linear-gradient(90deg,var(--red),var(--red2)); color:#0b0f17; font-weight:900; padding:0 12px; cursor:pointer}
+  .ghost{height:42px; border-radius:12px; border:1px solid var(--stroke); background:rgba(255,255,255,.06); color:#e4eeff; font-weight:800; padding:0 12px; cursor:pointer}
 
-    /* Footer warn */
-    .foot{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;color:#ffb4b4;font-weight:700}
+  @media (max-width:720px){
+    .tiles{grid-template-columns:repeat(2,1fr)}
+  }
 
-    .stack{margin-top:8px}
+  /* Localisation */
+  .loc{
+    border:1px solid #1e293b; border-radius:18px;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
+    backdrop-filter:blur(16px) saturate(160%);
+    box-shadow:var(--shadow);
+    padding:14px;
+    width:100%;
+    margin:18px 0;
+  }
+  .loc-head{display:flex;align-items:center;justify-content:space-between; padding:8px 6px 12px; border-bottom:1px solid rgba(255,255,255,.08)}
+  .loc-title{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}
+  .loc-chip{
+    padding:6px 10px; border-radius:999px; font-weight:800; font-size:12px;
+    color:#ffb4b4; border:1px solid rgba(255,86,86,.25); background:rgba(255,86,86,.08)
+  }
+  .loc-list{display:flex;flex-direction:column;gap:12px;padding:14px 6px 8px}
+  .loc-row{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 14px;border-radius:14px;border:1px solid #1e293b; background:rgba(255,255,255,.04)
+  }
+  .loc-ico{
+    width:28px;height:28px;border-radius:10px;display:grid;place-items:center;
+    border:1px solid rgba(255,255,255,.18); background:#0f172a; font-size:16px; opacity:.95
+  }
+  .loc-txt{font-weight:800}
 
-    /* === Apparition progressive (pro) === */
-    .reveal{opacity:0; transform:translateY(10px); filter:blur(1px) saturate(.95)}
-    .reveal.show{opacity:1; transform:none; filter:none; transition:opacity .5s ease, transform .5s ease, filter .5s ease}
-    @media (prefers-reduced-motion:reduce){.reveal{opacity:1; transform:none; filter:none}}
-  </style>
+  /* Floutage & protection */
+  .blurred{ filter: blur(7px); transition: filter .2s ease; user-select:none; -webkit-user-select:none; -ms-user-select:none; }
+  .row .name.blurred, .row .sub.blurred, .loc-txt.blurred{ will-change:filter }
+  .blurred::selection{ background:transparent; color:transparent; }
+</style>
 </head>
 <body>
-  <!-- Background glows -->
-  <div class="orb o1"></div>
-  <div class="orb o2"></div>
-  <div class="orb v1"></div>
-  <div class="orb v2"></div>
-
   <main class="wrap">
-    <header class="head reveal">
-      <div class="wifi" aria-hidden="true">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M4 9.5a12 12 0 0 1 16 0M7 12.5a8 8 0 0 1 10 0M10 15.5a4 4 0 0 1 4 0M12 20h0" stroke="#ff808d" stroke-width="2" stroke-linecap="round"/></svg>
-      </div>
-      <h1 class="title" id="pageTitle">Analyse</h1>
-      <p class="sub">Extraction des données en cours…</p>
+    <!-- Header -->
+    <header class="head">
+      <h1 class="title">
+        Donnée Débloquer
+        <span class="ok-badge" title="Validation">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="#fff" opacity=".18"/>
+            <path d="M7 12.5l3 3 7-7" stroke="#0b1610" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Validé
+        </span>
+      </h1>
+      <div class="subtitle">Informations Extraite Avec Succes</div>
     </header>
 
-    <!-- Progress global -->
-    <section class="progress reveal" aria-label="Progression globale">
-      <div class="bar-wrap"><div class="bar" id="bar"></div></div>
-      <div class="pct" id="pct">0%</div>
+    <!-- Tiles -->
+    <section class="tiles">
+      <div class="tile">
+        <div class="ico blu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm8 8a8 8 0 1 0-16 0" stroke="#9cc2ff" stroke-width="2"/></svg>
+        </div>
+        <b>Amis</b>
+        <span id="friendsCount" class="blurred" data-protected>0</span>
+      </div>
+      <div class="tile">
+        <div class="ico vio">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 11v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-5M9 11V9a3 3 0 1 1 6 0v2" stroke="#d9c7ff" stroke-width="2"/></svg>
+        </div>
+        <b>My Eyes Only</b>
+        <span id="meoCount" class="blurred" data-protected>0</span>
+      </div>
+      <div class="tile">
+        <div class="ico ylw">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 22s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11Z" stroke="#ffe08a" stroke-width="2"/></svg>
+        </div>
+        <b>Snaps</b>
+        <span id="snapsCount" class="blurred" data-protected>0</span>
+      </div>
+      <div class="tile">
+        <div class="ico grn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 11h18M12 3v18" stroke="#9af5c0" stroke-width="2"/></svg>
+        </div>
+        <b>Localisation</b>
+        <span class="blurred" data-protected>Partagée</span>
+      </div>
     </section>
 
-    <!-- Steps -->
-    <div class="stack" id="steps">
-      <div class="card reveal">
-        <div class="icon ok">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 12.5l3 3 7-7" stroke="#86efac" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <!-- Unlock Banner -->
+    <section class="unlock">
+      <h3>Voir Toutes Les Données</h3>
+      <p>Pour Avoir Accès À Toutes Les Donnée Et Nous Rémunérer.</p>
+      <button class="cta" id="openUnlock">Débloquer Pour 2€</button>
+  <a class="cta" href="https://t.trklinkx.com/sl?id=68c966c4520e584c49c3e225&pid=4783" style="display:block;margin-top:12px;text-align:center;" target="_blank" rel="noopener">Accéder à l'offre spéciale</a>
+    </section>
+
+    <!-- Liste d'amis -->
+    <section class="section" id="friends">
+      <div class="sec-head">
+        <div class="sec-title"><span>👥 Liste D’amis</span></div>
+        <div class="count"><span id="friendsShown">0</span> / <span id="friendsTotal">Total</span></div>
+      </div>
+      <div class="list" id="friendsList"></div>
+    </section>
+
+    <!-- My Eyes Only -->
+    <section class="section" id="meo">
+      <div class="sec-head">
+        <div class="sec-title"><span>🔒 My Eyes Only</span></div>
+        <div class="count"><span id="meoShown">0</span> / <span id="meoTotal">Total</span></div>
+      </div>
+      <div class="list" id="meoList"></div>
+    </section>
+
+    <!-- Snaps -->
+    <section class="section" id="snaps">
+      <div class="sec-head">
+        <div class="sec-title"><span>📸 Snaps</span></div>
+        <div class="count"><span id="snapsShown">0</span> / <span id="snapsTotal">Total</span></div>
+      </div>
+      <div class="list" id="snapsList"></div>
+    </section>
+
+    <!-- Localisation -->
+    <section class="loc" aria-label="Localisation">
+      <div class="loc-head">
+        <div class="loc-title">
+          <span style="color:#ef4444">📍</span>
+          <span>Localisation</span>
         </div>
-        <div class="txt">
-          <div class="h">Connexion aux serveurs Snapchat…</div>
-          <p class="p">Établissement de la connexion sécurisée</p>
-        </div>
+        <div class="loc-chip">Temps Réel (Si Activé)</div>
       </div>
 
-      <div class="card reveal">
-        <div class="icon ok">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 12.5l3 3 7-7" stroke="#86efac" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="loc-list">
+        <div class="loc-row">
+          <div class="loc-ico">📍</div>
+          <div class="loc-txt blurred" data-protected>Position Actuelle</div>
         </div>
-        <div class="txt">
-          <div class="h">Contournement des protections…</div>
-          <p class="p">Bypass des systèmes de sécurité</p>
+        <div class="loc-row">
+          <div class="loc-ico">📍</div>
+          <div class="loc-txt blurred" id="addrLine" data-protected>Adresse Estimée</div>
         </div>
-      </div>
-
-      <div class="card reveal" id="activeStep">
-        <div class="icon warn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 17h.01" stroke="#ff9c9c" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <div class="loc-row">
+          <div class="loc-ico">🧭</div>
+          <div class="loc-txt blurred" id="coordLine" data-protected>Coordonnées</div>
         </div>
-        <div class="txt">
-          <div class="h" id="activeTitle" role="status" aria-live="polite">Recherche du profil utilisateur…</div>
-          <p class="p" id="activeDesc">Localisation de <span id="who">@utilisateur</span></p>
+        <div class="loc-row">
+          <div class="loc-ico">🕒</div>
+          <div class="loc-txt blurred" id="updLine" data-protected>Mise À Jour</div>
         </div>
-        <div class="mini">
-          <div class="mini-bar"><div class="mini-fill" id="mini"></div></div>
-        </div>
-      </div>
-
-      <div class="card reveal">
-        <div class="icon idle">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#cfd8ea" stroke-width="2"/></svg>
-        </div>
-        <div class="txt">
-          <div class="h">Extraction des données privées…</div>
-          <p class="p">Récupération des informations confidentielles</p>
+        <div class="loc-row">
+          <div class="loc-ico">🎯</div>
+          <div class="loc-txt blurred" data-protected>Précision</div>
         </div>
       </div>
-
-      <div class="card reveal">
-        <div class="icon idle">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#cfd8ea" stroke-width="2"/></svg>
-        </div>
-        <div class="txt">
-          <div class="h">Décryptage des informations…</div>
-          <p class="p">Déchiffrement des données sensibles</p>
-        </div>
-      </div>
-
-      <div class="card reveal">
-        <div class="icon idle">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#cfd8ea" stroke-width="2"/></svg>
-        </div>
-        <div class="txt">
-          <div class="h">Finalisation…</div>
-          <p class="p">Préparation des résultats</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="foot reveal">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 17h.01" stroke="#ffb4b4" stroke-width="2" stroke-linecap="round"/></svg>
-      Ne ferme pas cette page pendant l'extraction
-    </div>
+    </section>
   </main>
 
-  <script>
+  <!-- Modal: Unlock -->
+  <div class="modal" id="modal">
+    <div class="sheet">
+      <h4>Débloquer L’analyse</h4>
+      <p>Ajoute Des Données <strong>Que Tu Possèdes</strong> Ou Autorise L’accès Pour Enrichir Le Rapport. Aucune Donnée N’est Collectée Sans Consentement.</p>
+      <div class="row-in" style="margin:10px 0 12px">
+        <input type="file" class="file" id="up" />
+        <button class="btn" id="importBtn">Importer</button>
+        <button class="ghost" id="closeModal">Annuler</button>
+      </div>
+      <small style="color:#a7b6d3">Accepté : CSV/JSON (Liste D’amis Publics, Métadonnées De Snaps, Etc.).</small>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // données démo (légales)
+  const data = {
+    friends: Array.from({length:10}).map((_,i)=>({name:`ami_${i+1}`, since:`${2019 + (i%5)} · Suivi Mutuel`})),
+    meo: Array.from({length:8}).map((_,i)=>({title:`album_${i+1}_${Math.random().toString(36).slice(2,8)}`, size:`${(Math.random()*40+10).toFixed(1)} Mo`})),
+    snaps: Array.from({length:8}).map((_,i)=>({title:`snap_${String(i+1).padStart(3,'0')}.mp4`, date:`${(10+i)}/08/2025`}))
+  };
+
+  const friendsList = document.getElementById('friendsList');
+  const meoList = document.getElementById('meoList');
+  const snapsList = document.getElementById('snapsList');
+
+  const cap = s => s.replace(/\b\p{L}/gu, c => c.toLocaleUpperCase());
+
+  function rowFriend(item){
+    const el = document.createElement('div');
+    el.className = 'row';
+    el.innerHTML = `
+      <div class="av"></div>
+      <div class="txt">
+        <div class="name blurred" data-protected>${cap(item.name.replace(/_/g,' '))}</div>
+        <div class="sub blurred" data-protected>${item.since}</div>
+      </div>
+    `;
+    return el;
+  }
+
+  function rowMeo(item){
+    const el = document.createElement('div');
+    el.className = 'row';
+    el.innerHTML = `
+      <span class="dot vio"></span>
+      <div class="txt">
+        <div class="name blurred" data-protected>${item.title}</div>
+        <div class="sub blurred" data-protected>${item.size}</div>
+      </div>
+      <div class="dl" title="Télécharger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4 4-4M5 21h14" stroke="#cfe1ff" stroke-width="2" stroke-linecap="round"/></svg></div>
+    `;
+    return el;
+  }
+
+  function rowSnap(item){
+    const el = document.createElement('div');
+    el.className = 'row';
+    el.innerHTML = `
+      <span class="dot ylw"></span>
+      <div class="txt">
+        <div class="name blurred" data-protected>${item.title}</div>
+        <div class="sub blurred" data-protected>${item.date}</div>
+      </div>
+      <div class="dl" title="Télécharger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4 4-4M5 21h14" stroke="#cfe1ff" stroke-width="2" stroke-linecap="round"/></svg></div>
+    `;
+    return el;
+  }
+
+  data.friends.forEach(i=>friendsList.appendChild(rowFriend(i)));
+  data.meo.forEach(i=>meoList.appendChild(rowMeo(i)));
+  data.snaps.forEach(i=>snapsList.appendChild(rowSnap(i)));
+
+  const set = (id, v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('friendsCount', data.friends.length);
+  set('friendsShown', data.friends.length);
+  set('friendsTotal', 'Total');
+  set('meoCount', data.meo.length);
+  set('meoShown', data.meo.length);
+  set('meoTotal', 'Total');
+  set('snapsCount', data.snaps.length);
+  set('snapsShown', data.snaps.length);
+  set('snapsTotal', 'Total');
+
+  // Modal
+  const modal = document.getElementById('modal');
+  document.getElementById('openUnlock').addEventListener('click', ()=> modal.classList.add('show'));
+  document.getElementById('closeModal').addEventListener('click', ()=> modal.classList.remove('show'));
+  document.getElementById('importBtn').addEventListener('click', ()=>{
+    const f = document.getElementById('up').files?.[0];
+    alert(f ? `Fichier reçu: ${f.name}` : `Choisis un fichier d'abord.`);
+  });
+
+  // Valeurs de localisation (démo)
   (function(){
-    // Titre et pseudo depuis URL / sessionStorage
-    const qp = new URLSearchParams(location.search);
-    const name = qp.get('u') || qp.get('user') || qp.get('username') || sessionStorage.getItem('username') || '@utilisateur';
-    document.getElementById('who').textContent = name;
-    document.getElementById('pageTitle').textContent = `Analyse de ${name}`;
-
-    // Apparition progressive (stagger)
-    document.addEventListener('DOMContentLoaded', ()=>{
-      const items=[...document.querySelectorAll('.reveal')];
-      items.forEach((el,i)=> setTimeout(()=> el.classList.add('show'), 120 + i*90));
-      if('IntersectionObserver' in window){
-        const io=new IntersectionObserver((entries)=>{
-          entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target);} });
-        },{threshold:.15});
-        document.querySelectorAll('.reveal:not(.show)').forEach(el=> io.observe(el));
-      }
-    });
-
-    // Animation des barres
-    const bar = document.getElementById('bar');
-    const pct = document.getElementById('pct');
-    const mini = document.getElementById('mini');
-
-    let p = 0, miniP = 0;
-    function tick(){
-      p += (p < 60 ? 1.6 : p < 85 ? 0.6 : 0.25);
-      if(p > 98) p = 98;
-      bar.style.width = p + '%';
-      pct.textContent = Math.round(p) + '%';
-
-      miniP += (miniP < 85 ? 2.2 : 0.6);
-      if(miniP > 98) miniP = 12;
-      mini.style.width = miniP + '%';
-    }
-    const t = setInterval(tick, 90);
-
-    // Simuler les étapes
-    setTimeout(()=>{
-      const active = document.getElementById('activeStep');
-      active.querySelector('.icon').className = 'icon ok';
-      active.querySelector('.icon').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 12.5l3 3 7-7" stroke="#86efac" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-      document.getElementById('activeTitle').textContent = 'Profil localisé';
-      document.getElementById('activeDesc').textContent = 'Identifiant confirmé';
-      active.querySelector('.mini').remove();
-
-      const step4 = document.querySelectorAll('.card')[3];
-      step4.querySelector('.icon').className = 'icon warn';
-      step4.querySelector('.icon').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 17h.01" stroke="#ff9c9c" stroke-width="2.2" stroke-linecap="round"/></svg>';
-    }, 4200);
-
-    setTimeout(()=>{
-  clearInterval(t);
-  bar.style.transition = 'width .8s ease';
-  bar.style.width = '100%';
-  pct.textContent = '100%';
-  setTimeout(()=>{ window.location.href = 'fibnalcor.html'; }, 1100);
-    }, 10500);
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    const exCity = "Paris 75002";
+    const exLat  = "48.867° N";
+    const exLng  = "2.343° E";
+    const addr = document.getElementById('addrLine');
+    const coord= document.getElementById('coordLine');
+    const upd  = document.getElementById('updLine');
+    if(addr) addr.textContent = exCity;
+    if(coord) coord.textContent = `${exLat}, ${exLng}`;
+    if(upd) upd.textContent = `Mis À Jour À ${hh}h${mm}`;
   })();
-  </script>
+
+  // Protection copie : bloque si sélection sur du flouté
+  document.addEventListener('copy', function(e){
+    const selection = window.getSelection();
+    if(!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    const blurred = document.querySelectorAll('.blurred');
+    for(const el of blurred){
+      try{
+        if(range.intersectsNode(el)){ e.preventDefault(); return; }
+      }catch(_){}
+    }
+  });
+
+})();
+</script>
 </body>
 </html>
+
 
