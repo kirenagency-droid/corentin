@@ -16,22 +16,31 @@
       --muted:#b2bdcf;
       --ghost:#ff2d55;
       --ghost-2:#ff3b3b;
-      --radius:20px;
+      --radius:18px;
       --blur:blur(16px) saturate(160%);
       --shadow:0 18px 60px rgba(0,0,0,.55);
       --green:#22c55e; --blue:#3b82f6; --yellow:#facc15;
+
+      /* gabarits */
+      --content-max: 760px;
+      --content-mobile: 340px; /* compact mobile */
+      --pad-x: 18px;
+      --pad-x-mobile: 10px;
     }
-    *{box-sizing:border-box}
+
+    *{box-sizing:border-box; min-width:0}
     html,body{
       margin:0;
       font-family:'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background:var(--bg); color:var(--text);
       display:flex; flex-direction:column; align-items:center;
-      padding:8px 18px 0; /* pas d’espace en bas */
-      overflow-x:hidden;
+      padding:8px var(--pad-x) 0;
+      overflow-x:hidden; width:100%; max-width:100vw;
+      overscroll-behavior-x:none; touch-action:pan-y;
     }
+    img,svg{max-width:100%; height:auto; display:block}
 
-    /* Lueurs */
+    /* Lueurs (masquées en mobile pour éviter tout débordement) */
     .orb{position:fixed; inset:auto; width:680px; height:680px; border-radius:50%; pointer-events:none; filter:blur(90px); opacity:.18; mix-blend-mode:screen; z-index:0 !important}
     .orb.o1{top:-240px; left:50%; width:600px; height:600px; transform:translateX(-50%); background:radial-gradient(circle at 50% 50%, rgba(255,45,85,.28), transparent 62%)}
     .orb.o2{bottom:-280px; right:-260px; width:520px; height:520px; background:radial-gradient(circle at 40% 50%, rgba(255,59,59,.22), transparent 64%)}
@@ -39,77 +48,114 @@
     .orb.v1{top:10%; left:-80px; width:560px; height:560px; opacity:.20; filter:blur(90px); background:radial-gradient(circle at 60% 40%, rgba(167,139,250,.45), transparent 62%)}
     .orb.v2{bottom:-80px; left:48%; transform:translateX(-50%); width:520px; height:520px; opacity:.16; filter:blur(100px); background:radial-gradient(circle at 50% 50%, rgba(147,112,255,.38), transparent 64%)}
 
-    .wrap{width:min(760px,100%); position:relative; z-index:1; margin-bottom:0}
+    /* Conteneur principal */
+    .wrap{
+      width:min(var(--content-max), 100%);
+      max-width:var(--content-max);
+      position:relative; z-index:1; margin:0 auto;
+    }
 
-    .logo{display:flex; flex-direction:column; align-items:center; gap:8px; margin:8px 0 12px !important}
-    .ghost{width:56px; height:56px; border-radius:16px; display:grid; place-items:center}
+    .logo{display:flex; flex-direction:column; align-items:center; gap:6px; margin:6px 0 10px !important}
+    .ghost{width:52px; height:52px; border-radius:16px; display:grid; place-items:center}
     .ghost svg{filter:drop-shadow(0 10px 30px #ff2d5533)}
-    .title{font-weight:900; font-size:clamp(34px,7vw,44px); letter-spacing:.2px; background:linear-gradient(180deg,var(--ghost),var(--ghost-2)); -webkit-background-clip:text; background-clip:text; color:transparent}
-    .subtitle{margin:2px 0 22px; color:var(--muted); font-weight:600; text-align:center; font-size:clamp(15px,2.6vw,18px)}
+    .title{font-weight:900; font-size:clamp(28px,7vw,42px); letter-spacing:.2px; background:linear-gradient(180deg,var(--ghost),var(--ghost-2)); -webkit-background-clip:text; background-clip:text; color:transparent; text-align:center}
+    .subtitle{margin:2px 0 18px; color:var(--muted); font-weight:600; text-align:center; font-size:clamp(13.5px,2.6vw,17px)}
 
     .glass{
       background:linear-gradient(180deg, var(--glass), var(--glass-2));
       border:1px solid var(--stroke);
       border-radius:var(--radius);
-      backdrop-filter:var(--blur);
-      -webkit-backdrop-filter:var(--blur);
+      backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
       box-shadow:var(--shadow);
     }
 
-    .card{display:flex; align-items:center; gap:14px; padding:18px; margin:14px 0}
-    .ico{width:48px; height:48px; border-radius:14px; display:grid; place-items:center; flex:0 0 48px;
+    .card{display:flex; align-items:center; gap:12px; padding:14px; margin:10px 0}
+    .ico{width:40px; height:40px; border-radius:12px; display:grid; place-items:center; flex:0 0 40px;
          background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
          border:1px solid rgba(255,255,255,.18); backdrop-filter:blur(8px) saturate(150%)}
-    .card h3{margin:0; font-size:17px}
-    .card p{margin:4px 0 0; color:var(--muted); font-weight:600}
+    .card h3{margin:0; font-size:15px}
+    .card p{margin:3px 0 0; color:var(--muted); font-weight:600; font-size:13px; overflow-wrap:anywhere}
 
-    /* Bloc entrée + badges + étoiles */
-    .input-wrap{padding:18px; margin-top:18px; margin-bottom:0}
-    .input{width:100%; height:54px; border-radius:14px; border:1px solid rgba(255,255,255,.15);
-           background:rgba(7,9,13,.55); color:var(--text); padding:0 16px; font-size:16px; outline:none;
+    /* Input + CTA */
+    .input-wrap{padding:14px; margin:12px 0 0}
+    .input{width:100%; height:46px; border-radius:12px; border:1px solid rgba(255,255,255,.15);
+           background:rgba(7,9,13,.55); color:var(--text); padding:0 12px; font-size:15px; outline:none;
            backdrop-filter:blur(12px) saturate(140%)}
     .input::placeholder{color:#90a2bf}
-    .cta{width:100%; height:54px; margin-top:14px; border-radius:16px; border:1px solid rgba(255,45,85,.45);
-         font-weight:900; font-size:18px; cursor:pointer;
+    .cta{width:100%; height:48px; margin-top:10px; border-radius:14px; border:1px solid rgba(255,45,85,.45);
+         font-weight:900; font-size:16px; cursor:pointer;
          background:linear-gradient(90deg, var(--ghost) 0%, var(--ghost-2) 100%);
-         color:#fff; box-shadow:0 28px 70px rgba(255,45,85,.25)}
+         color:#fff; box-shadow:0 24px 60px rgba(255,45,85,.22)}
     .cta:active{transform:translateY(1px)}
 
-    .mini-badges{
-      display:flex; justify-content:center; align-items:center;
-      gap:10px; margin-top:12px; flex-wrap:nowrap; white-space:nowrap;
-      overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
-    }
-    .mini-badges::-webkit-scrollbar{display:none;}
-    .badge{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:999px;
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border:1px solid var(--stroke); backdrop-filter:blur(10px) saturate(160%);
-      font-weight:800; font-size:12px; line-height:1;
-    }
-    .dot{width:6px;height:6px;border-radius:50%}
-    .dot.blue{background:var(--blue); box-shadow:0 0 0 3px rgba(59,130,246,.2)}
-    .dot.green{background:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,.2)}
-    .dot.yellow{background:var(--yellow); box-shadow:0 0 0 3px rgba(250,204,21,.25)}
+    /* === Avis récents (scopé, compact) === */
+    .rvw-wrap{--rvw-bg:var(--glass);--rvw-stroke:var(--stroke);--rvw-text:var(--text);--rvw-sub:var(--muted)}
+    .rvw-wrap{width:100%; max-width:var(--content-max); margin:18px auto 8px; padding:0}
+    .rvw-card{background:var(--rvw-bg);border:1px solid var(--rvw-stroke);border-radius:18px;padding:12px;box-shadow:var(--shadow);backdrop-filter:var(--blur)}
+    .rvw-h{font-weight:800;font-size:20px;margin:0 0 10px 2px}
+    .rvw-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--rvw-stroke);border-radius:14px;padding:10px 12px}
+    .rvw-score{display:flex;align-items:center;gap:8px}
+    .rvw-score .val{font-size:20px;font-weight:900;line-height:1}
+    .rvw-stars{display:flex;gap:3px}
+    .rvw-stars svg{width:14px;height:14px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.25))}
+    .rvw-count{color:var(--rvw-sub);font-weight:700;white-space:nowrap;font-size:12.5px}
+    .rvw-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .rvw-item{display:flex;gap:10px;align-items:flex-start;background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,0));border:1px solid var(--rvw-stroke);border-radius:14px;padding:10px 12px;min-width:0}
+    .rvw-avatar{width:36px;height:36px;border-radius:50%;background:radial-gradient(120% 120% at 30% 30%, #b5d3ff, #bfa8ff);display:grid;place-items:center;color:#111;font-weight:800;border:1px solid rgba(255,255,255,.35);flex:0 0 36px;font-size:12px}
+    .rvw-body{flex:1;min-width:0}
+    .rvw-meta{font-weight:800;display:flex;gap:6px;flex-wrap:wrap;font-size:13px}
+    .rvw-date{color:var(--rvw-sub);font-weight:700}
+    .rvw-quote{margin:4px 0 0;color:var(--rvw-text);word-break:break-word;font-size:13px; overflow-wrap:anywhere}
+    .rvw-right{display:flex;align-items:center;gap:6px;white-space:nowrap}
 
-    .mini-rating{
-      margin-top:10px;
-      display:flex; align-items:center; justify-content:center; gap:8px;
-      color:#e9f1ff; font-weight:900; font-size:14px;
-    }
-    .mini-rating .stars{letter-spacing:1px}
-    .mini-rating .full{color:#ffd166}
-    .mini-rating .half{background:linear-gradient(90deg,#ffd166 0 50%, #303642 50%); -webkit-background-clip:text; background-clip:text; color:transparent}
-    .mini-rating small{color:#b8c6de; font-weight:700}
+    /* === Footer Politique (lien) === */
+    .footer-policy{width:100%; display:flex; justify-content:center; margin:16px 0 26px}
+    .policy-link{background:transparent; color:var(--muted); border:none; cursor:pointer;
+      text-decoration:underline; font-size:12.5px; padding:6px 10px; border-radius:10px}
+    .policy-link:hover{color:#fff}
 
-    @media (max-width:520px){
-      .ico{width:42px;height:42px;border-radius:12px}
-      .card{padding:16px}
-      .card h3{font-size:16px}
-      .badge{padding:5px 8px; font-size:11px}
-      .dot{width:5px;height:5px}
-      .mini-rating{font-size:13px}
+    /* === Modal Politique === */
+    #policyModal{display:none; position:fixed; inset:0; width:100vw; height:100vh; background:rgba(0,0,0,.36); z-index:9999;
+      align-items:center; justify-content:center; padding:18px}
+    .policy-box{background:#181c22; color:#eef3ff; border:1px solid rgba(255,255,255,.14);
+      border-radius:14px; max-width:520px; width:min(92vw, 520px); box-shadow:0 8px 32px #000a;
+      padding:20px 16px 14px; position:relative}
+    .policy-box h3{margin:0 0 10px; font-size:16px}
+    .policy-box p{margin:8px 0; line-height:1.55; color:#dbe5ff}
+    .policy-box ul{margin:8px 0 0; padding-left:18px}
+    .policy-box li{margin:4px 0}
+    .policy-close{margin-top:12px; padding:8px 14px; border-radius:10px; border:none; background:#2a3140; color:#fff; font-weight:800; cursor:pointer}
+
+    /* ======= Mobile strict (ultra compact) ======= */
+    @media (max-width:560px){
+      html,body{padding:8px var(--pad-x-mobile) 0}
+      .wrap{max-width:var(--content-mobile); padding-inline:0}
+      .orb{display:none !important}
+
+      .logo{margin:6px 0 8px !important}
+      .ghost{width:44px;height:44px}
+      .title{font-size:clamp(22px,6.4vw,28px)}
+      .subtitle{font-size:clamp(12.5px,3.4vw,14px)}
+
+      .card{padding:12px; margin:8px 0}
+      .ico{width:32px;height:32px; border-radius:10px; flex-basis:32px}
+      .card h3{font-size:14px}
+      .card p{font-size:12.5px}
+
+      .input-wrap{padding:12px; margin-top:10px}
+      .input{height:44px; border-radius:11px; font-size:14.5px; padding:0 10px}
+      .cta{height:46px; border-radius:12px; font-size:15px}
+
+      .rvw-wrap{max-width:var(--content-mobile)}
+      .rvw-h{font-size:18px; margin-left:2px}
+      .rvw-summary{gap:6px; padding:8px 10px}
+      .rvw-stars svg{width:13px;height:13px}
+      .rvw-score .val{font-size:18px}
+      .rvw-item{padding:8px 10px; gap:8px}
+      .rvw-avatar{width:32px;height:32px; flex-basis:32px}
+
+      .policy-box{width:96vw; max-width:420px; padding:18px 12px 12px}
+      .policy-close{padding:7px 12px}
     }
   </style>
 </head>
@@ -133,7 +179,7 @@
 
     <div class="card glass">
       <div class="ico">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm14 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 17a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm14 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke="#b8c9ff" stroke-width="2"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm14 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 17a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm14 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke="#b8c9ff" stroke-width="2"/></svg>
       </div>
       <div>
         <h3>Liste d'amis</h3>
@@ -143,7 +189,7 @@
 
     <div class="card glass">
       <div class="ico">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 11v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-5M9 11V9a3 3 0 1 1 6 0v2" stroke="#ccb8ff" stroke-width="2"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 11v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-5M9 11V9a3 3 0 1 1 6 0v2" stroke="#ccb8ff" stroke-width="2"/></svg>
       </div>
       <div>
         <h3>My Eyes Only</h3>
@@ -153,7 +199,7 @@
 
     <div class="card glass">
       <div class="ico">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11Z" stroke="#ff9a9a" stroke-width="2"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11Z" stroke="#ff9a9a" stroke-width="2"/></svg>
       </div>
       <div>
         <h3>Localisation</h3>
@@ -163,7 +209,7 @@
 
     <div class="card glass">
       <div class="ico">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z" stroke="#a8e2ff" stroke-width="2"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z" stroke="#a8e2ff" stroke-width="2"/></svg>
       </div>
       <div>
         <h3>Discussions</h3>
@@ -171,25 +217,99 @@
       </div>
     </div>
 
-    <!-- Input + CTA + badges + étoiles -->
+    <!-- Input + CTA -->
     <div class="input-wrap glass">
       <input class="input" id="user" placeholder="Nom d'utilisateur Snapchat" autocomplete="off" aria-label="Nom d'utilisateur Snapchat" />
       <button class="cta" id="start">Commencer</button>
+    </div>
 
-      <div class="mini-badges" aria-hidden="true">
-        <div class="badge"><span class="dot blue"></span>100% anonyme</div>
-        <div class="badge"><span class="dot green"></span>Résultats instantanés</div>
-        <div class="badge"><span class="dot yellow"></span>Aucune détection</div>
-      </div>
+    <!-- ===== AVIS RÉCENTS ===== -->
+    <section class="rvw-wrap" aria-label="Avis récents">
+      <div class="rvw-card">
+        <h2 class="rvw-h">Avis récents</h2>
 
-      <div class="mini-rating" aria-label="Note des utilisateurs">
-        <div class="stars" aria-hidden="true">
-          <span class="full">★</span><span class="full">★</span><span class="full">★</span><span class="full">★</span><span class="half">★</span>
+        <div class="rvw-summary">
+          <div class="rvw-score">
+            <span class="val">4.3</span>
+            <div class="rvw-stars" aria-label="4,3 sur 5">
+              <svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#F6C84C" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg>
+            </div>
+          </div>
+          <div class="rvw-count">67 avis</div>
         </div>
-        <div>4,3 <small>/ 5</small></div>
+
+        <div class="rvw-list">
+          <article class="rvw-item">
+            <div class="rvw-avatar">A</div>
+            <div class="rvw-body">
+              <div class="rvw-meta"><span>Anonyme</span> · <span class="rvw-date">28/08/2025</span></div>
+              <p class="rvw-quote">« j'ai eu mes reponses merci beaucoup »</p>
+            </div>
+            <div class="rvw-right">
+              <div class="rvw-stars" aria-label="5 sur 5">
+                <svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg>
+              </div>
+            </div>
+          </article>
+
+          <article class="rvw-item">
+            <div class="rvw-avatar">A</div>
+            <div class="rvw-body">
+              <div class="rvw-meta"><span>Anonyme</span> · <span class="rvw-date">25/08/2025</span></div>
+              <p class="rvw-quote">« Service rapide, efficace. »</p>
+            </div>
+            <div class="rvw-right">
+              <div class="rvw-stars" aria-label="5 sur 5">
+                <svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg>
+              </div>
+            </div>
+          </article>
+
+          <article class="rvw-item">
+            <div class="rvw-avatar">A</div>
+            <div class="rvw-body">
+              <div class="rvw-meta"><span>Anonyme</span> · <span class="rvw-date">20/08/2025</span></div>
+              <p class="rvw-quote">« déçu car g découvert qu'elle me trompe depuis 2 mois »</p>
+            </div>
+            <div class="rvw-right">
+              <div class="rvw-stars" aria-label="3 sur 5">
+                <svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="#F6C84C"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#F6C84C" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="#F6C84C" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.88L18.18 22 12 18.56 5.82 22 7 14.15l-5-4.88 6.91-1.01z"/></svg>
+              </div>
+            </div>
+          </article>
+        </div>
       </div>
+    </section>
+    <!-- ===== /AVIS RÉCENTS ===== -->
+
+    <!-- ===== Lien Politique de confidentialité ===== -->
+    <div class="footer-policy">
+      <button class="policy-link" id="openPolicy" aria-haspopup="dialog" aria-controls="policyModal">
+        Politique de confidentialité
+      </button>
     </div>
   </main>
+
+  <!-- ===== Modal Politique ===== -->
+  <div id="policyModal" role="dialog" aria-modal="true" aria-labelledby="policyTitle">
+    <div class="policy-box">
+      <h3 id="policyTitle">Politique de confidentialité</h3>
+      <p><strong>AVERTISSEMENT GÉNÉRAL.</strong> Snapgo est un service indépendant qui n'exploite ni n'interfère avec les mécanismes de sécurité de Snapchat. Aucun compte Snapchat n'est piraté.</p>
+      <p><strong>Paiements.</strong> Les informations de facturation sont saisies sur une page de paiement tierce sécurisée. Snapgo n'accède jamais au numéro complet de carte.</p>
+      <p><strong>Données locales.</strong> Préférences stockées localement uniquement.</p>
+      <ul>
+        <li>Aucun contournement des protections Snapchat</li>
+        <li>Aucune donnée personnelle envoyée pendant l'aperçu</li>
+        <li>Paiement géré par un PSP tiers sécurisé</li>
+        <li>Préférences locales uniquement</li>
+      </ul>
+      <button class="policy-close" id="closePolicy">Fermer</button>
+    </div>
+  </div>
 
   <script>
   // Validation + redirection
@@ -204,6 +324,24 @@
     const btn=document.getElementById('start');
     btn.textContent='Analyse…';
     setTimeout(()=>{ window.location.href='analysecor.html'; }, 1200);
+  });
+
+  // Politique de confidentialité (ouverture/fermeture)
+  const modal = document.getElementById('policyModal');
+  const openBtn = document.getElementById('openPolicy');
+  const closeBtn = document.getElementById('closePolicy');
+
+  openBtn.addEventListener('click', () => {
+    modal.style.display = 'flex';
+  });
+  closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  modal.addEventListener('click', (e) => {
+    if(e.target === modal){ modal.style.display = 'none'; }
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){ modal.style.display = 'none'; }
   });
   </script>
 </body>
