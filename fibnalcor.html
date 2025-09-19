@@ -217,7 +217,7 @@
       <h3 id="unlockTitle">Voir toutes les données</h3>
       <p>Pour avoir accès à toutes les données et nous rémunérer.</p>
       <!-- href par défaut (sera remplacé par JS pour l’alternance) -->
-      <a class="cta" id="ctaUnlock" href="https://t.trklinkx.com/sl?id=63a14c808dec34873b60498f&amp;pid=4784">
+      <a class="cta" id="ctaUnlock" href="https://t.trklinkx.com/sl?id=68c966c4520e584c49c3e225&amp;pid=4783">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 11v4a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4M9 11V9a3 3 0 1 1 6 0v2" stroke="#161717" stroke-width="2" stroke-linecap="round"/>
         </svg>
@@ -289,7 +289,7 @@
         </div>
         <div class="loc-chip">
           Temps réel ·
-          <a id="activerLink" href="https://t.trklinkx.com/sl?id=63a14c808dec34873b60498f&amp;pid=4784">Activer</a>
+          <a id="activerLink" href="https://t.trklinkx.com/sl?id=68c966c4520e584c49c3e225&amp;pid=4783">Activer</a>
         </div>
       </div>
 
@@ -310,9 +310,8 @@
 
 <script>
 (function(){
-  // ===== Rotation des liens d’affiliation (alternance 1/2 au chargement) =====
+  // ===== Lien d’affiliation unique =====
   const AFF_URLS = [
-    'https://t.trklinkx.com/sl?id=63a14c808dec34873b60498f&pid=4784',
     'https://t.trklinkx.com/sl?id=68c966c4520e584c49c3e225&pid=4783'
   ];
   function pickAffiliateUrl(){
@@ -324,7 +323,7 @@
   }
   const AFF_URL = pickAffiliateUrl();
 
-  // Applique le lien alterné sur le bouton et le lien "Activer"
+  // Applique le lien sur le bouton et le lien "Activer"
   const cta = document.getElementById('ctaUnlock');
   if (cta) cta.href = AFF_URL;
   const act = document.getElementById('activerLink');
@@ -406,7 +405,7 @@
   set('meoCount', data.meo.length);
   set('snapsCount', data.snaps.length);
 
-  // Téléchargement verrouillé -> message + redirection (utilise l’URL alternée)
+  // Téléchargement verrouillé -> message + redirection (utilise l’URL unique)
   document.addEventListener('click', (e)=>{
     const btn = e.target.closest('.dl');
     if(!btn) return;
