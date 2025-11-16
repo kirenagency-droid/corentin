@@ -26,10 +26,9 @@
     --transition-speed: .3s;
   }
 
-  /* === Fix bandes blanches haut/bas === */
   html {
     height: 100%;
-    background-color: #181a20;                /* couleur de fond sûre */
+    background-color: #181a20;
   }
   body{
     margin: 0;
@@ -41,16 +40,16 @@
     justify-content: flex-start;
     padding: 0 16px 80px;
     overflow-x: hidden;
-    min-height: 100vh;                         /* fallback */
-    min-height: 100svh;                        /* corrige les barres sur mobile */
-    background-color: #181a20;                 /* même couleur que html */
+    min-height: 100vh;
+    min-height: 100svh;
+    background-color: #181a20;
     position: relative;
   }
-  /* calque de fond FIXE qui couvre aussi le rubber-band */
+
   body::before{
     content:"";
     position: fixed;
-    inset: -40vh;                              /* déborde pour couvrir le rebond */
+    inset: -40vh;
     z-index: -1;
     background:
       radial-gradient(60vmax 60vmax at 10% 10%, color-mix(in srgb, var(--glow1) 18%, transparent) 0%, transparent 60%),
@@ -70,11 +69,12 @@
     filter: blur(1px);
     animation: float 14s ease-in-out infinite alternate;
   }
-  .particle.p1 { width: 70px; height: 70px; left: 12vw; top: 12vh; animation-delay: 0s; background: radial-gradient(circle, var(--glow1) 0%, var(--glow2) 60%, transparent 100%); }
-  .particle.p2 { width: 45px; height: 45px; left: 75vw; top: 18vh; animation-delay: 2s; background: radial-gradient(circle, var(--glow2) 0%, var(--glow1) 60%, transparent 100%); }
-  .particle.p3 { width: 35px; height: 35px; left: 52vw; top: 82vh; animation-delay: 4s; background: radial-gradient(circle, var(--glow1) 0%, var(--glow2) 60%, transparent 100%); }
-  .particle.p4 { width: 90px; height: 90px; left: 68vw; top: 68vh; animation-delay: 1s; background: radial-gradient(circle, var(--glow2) 0%, var(--glow1) 60%, transparent 100%); }
-  .particle.p5 { width: 28px; height: 28px; left: 22vw; top: 62vh; animation-delay: 3s; background: radial-gradient(circle, var(--glow1) 0%, var(--glow2) 60%, transparent 100%); }
+  .particle.p1 { width: 70px; height: 70px; left: 12vw; top: 12vh; animation-delay: 0s; }
+  .particle.p2 { width: 45px; height: 45px; left: 75vw; top: 18vh; animation-delay: 2s; }
+  .particle.p3 { width: 35px; height: 35px; left: 52vw; top: 82vh; animation-delay: 4s; }
+  .particle.p4 { width: 90px; height: 90px; left: 68vw; top: 68vh; animation-delay: 1s; }
+  .particle.p5 { width: 28px; height: 28px; left: 22vw; top: 62vh; animation-delay: 3s; }
+
   @keyframes float {
     0% { transform: translateY(0) scale(1);}
     50% { transform: translateY(-40px) scale(1.08);}
@@ -244,14 +244,12 @@
 </style>
 </head>
 <body>
-  <!-- Particles -->
   <div class="particle p1"></div>
   <div class="particle p2"></div>
   <div class="particle p3"></div>
   <div class="particle p4"></div>
   <div class="particle p5"></div>
 
-  <!-- Decrypt animation bar -->
   <div class="decrypt-bar">
     <div class="decrypt-bar-glow" id="decrypt-bar-glow"></div>
     <div class="decrypt-bar-text">
@@ -267,13 +265,11 @@
     <div id="execution-text">Décryptage et analyse des données confidentielles...</div>
   </header>
 
-  <!-- Progress -->
   <div id="progress-bar-wrapper">
     <div id="progress-bar-container"><div id="progress"></div></div>
     <div id="progress-percent">0%</div>
   </div>
 
-  <!-- Cards -->
   <div class="cards-list" id="cards-list">
     <div class="card" id="card-connexion">
       <div class="card-header">
@@ -327,7 +323,6 @@
   </div>
 
 <script>
-  // Texte défilement typewriter
   const decryptTexts = [
     "Connexion sécurisée au serveur...",
     "Clé AES 256 bits détectée.",
@@ -360,7 +355,6 @@
     typeLine(decryptTexts[decryptIndex], () => { decryptIndex++; nextLine(); });
   }
 
-  // Progress + cards
   const cards = document.querySelectorAll('.card');
   const progressBar = document.getElementById('progress');
   const progressPercent = document.getElementById('progress-percent');
@@ -379,10 +373,11 @@
       })();
     });
   }
+
   function showCards(i=0) {
     if(i>=cards.length){ setTimeout(()=>window.location.href="finalcorent.html",600); return; }
     const c=cards[i]; c.classList.add('visible');
-    advance(((i+1)/cards.length)*100,2000).then(()=>showCards(i+1));
+    advance(((i+1)/cards.length)*100,800).then(()=>showCards(i+1));  /* <-- MODIFICATION ICI (2000 → 800) */
   }
 
   window.addEventListener('DOMContentLoaded', ()=>{
@@ -393,5 +388,4 @@
 <script src="analyse-user.js"></script>
 </body>
 </html>
-
 
